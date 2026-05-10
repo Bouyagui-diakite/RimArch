@@ -27,6 +27,11 @@ const adminItems = [
     label: 'Utilisateurs',
     icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />,
   },
+  {
+    to: '/admin/logs',
+    label: 'Journaux',
+    icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />,
+  },
 ]
 
 const roleColors = {
@@ -63,32 +68,32 @@ export default function AppLayout({ children }) {
       )}
 
       {/* ── Sidebar ── */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-30 w-64 bg-slate-900 flex flex-col transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`fixed lg:static inset-y-0 left-0 z-30 w-72 bg-slate-900 flex flex-col transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
 
         {/* Logo */}
-        <div className="flex items-center gap-3 px-6 py-6 border-b border-white/5">
-          <div className="flex items-center justify-center w-9 h-9 bg-blue-600 rounded-xl shrink-0 shadow-lg shadow-blue-600/30">
+        <div className="flex items-center gap-4 px-7 py-7 border-b border-white/5">
+          <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-xl shrink-0 shadow-lg shadow-blue-600/30">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
                 d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
             </svg>
           </div>
           <div>
-            <p className="text-white font-bold text-sm leading-none tracking-wide">RIMArch</p>
-            <p className="text-slate-500 text-xs mt-1">Gestion des Archives</p>
+            <p className="text-white font-bold text-base leading-none tracking-wide">RIMArch</p>
+            <p className="text-slate-500 text-xs mt-1.5">Gestion des Archives</p>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-          <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 mb-3">Menu</p>
+        <nav className="flex-1 px-5 py-7 space-y-1.5 overflow-y-auto">
+          <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 mb-4">Menu</p>
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
+                `flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 ${
                   isActive
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                     : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -102,14 +107,14 @@ export default function AppLayout({ children }) {
 
           {hasRole('admin') && (
             <>
-              <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 pt-6 mb-3">Administration</p>
+              <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 pt-7 mb-4">Administration</p>
               {adminItems.map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}
                   onClick={() => setSidebarOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
+                    `flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 ${
                       isActive
                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                         : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -125,12 +130,12 @@ export default function AppLayout({ children }) {
         </nav>
 
         {/* Profil */}
-        <div className="p-4 border-t border-white/5">
+        <div className="p-5 border-t border-white/5">
           <div
             onClick={() => { navigate('/profil'); setSidebarOpen(false) }}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition-all group"
+            className="flex items-center gap-3.5 p-3.5 rounded-xl hover:bg-white/5 cursor-pointer transition-all group"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
