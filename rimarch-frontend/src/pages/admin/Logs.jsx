@@ -120,7 +120,7 @@ export default function AdminLogs() {
           <select
             value={filters.action}
             onChange={(e) => setFilter('action', e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
+            className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
           >
             <option value="">Toutes les actions</option>
             {Object.entries(ACTION_LABELS).map(([k, v]) => (
@@ -135,7 +135,7 @@ export default function AdminLogs() {
           <select
             value={filters.user_id}
             onChange={(e) => setFilter('user_id', e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
+            className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
           >
             <option value="">Tous les utilisateurs</option>
             {users.map((u) => (
@@ -151,7 +151,7 @@ export default function AdminLogs() {
             type="date"
             value={filters.from}
             onChange={(e) => setFilter('from', e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
+            className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
           />
         </div>
 
@@ -162,7 +162,7 @@ export default function AdminLogs() {
             type="date"
             value={filters.to}
             onChange={(e) => setFilter('to', e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
+            className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
           />
         </div>
       </div>

@@ -68,7 +68,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="max-w-2xl space-y-8">
+    <div className="max-w-xl mx-auto space-y-8">
 
       <div>
         <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Mon profil</h1>
@@ -103,7 +103,7 @@ export default function Profile() {
           <Alert msg={profileMsg} />
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+            <label className="block text-sm font-bold text-slate-700 mb-3">
               Nom complet
             </label>
             <input
@@ -111,28 +111,28 @@ export default function Profile() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
+              className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-4 text-base text-slate-800 focus:outline-none focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+            <label className="block text-sm font-bold text-slate-700 mb-3">
               Adresse email
             </label>
             <input
               type="email"
               value={user?.email}
               disabled
-              className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-400 cursor-not-allowed"
+              className="w-full bg-slate-100 border-2 border-slate-200 rounded-2xl px-5 py-4 text-base text-slate-400 cursor-not-allowed"
             />
             <p className="text-xs text-slate-400 mt-1">L'email ne peut pas être modifié.</p>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-center pt-2">
             <button
               type="submit"
               disabled={profileLoading}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold px-10 py-3.5 rounded-2xl text-sm transition-colors"
             >
               {profileLoading ? (
                 <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -152,7 +152,7 @@ export default function Profile() {
           <h2 className="text-base font-bold text-slate-800">Changer le mot de passe</h2>
         </div>
         <div className="px-7 py-6">
-        <form onSubmit={handlePasswordSave} className="space-y-4">
+        <form onSubmit={handlePasswordSave} className="space-y-6">
           <Alert msg={pwMsg} />
 
           {[
@@ -161,23 +161,23 @@ export default function Profile() {
             { key: 'password_confirmation', label: 'Confirmer le nouveau mot de passe' },
           ].map(({ key, label }) => (
             <div key={key}>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">{label}</label>
+              <label className="block text-sm font-bold text-slate-700 mb-3">{label}</label>
               <input
                 type="password"
                 required
                 value={passwords[key]}
                 onChange={(e) => setPasswords({ ...passwords, [key]: e.target.value })}
                 placeholder="••••••••"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
+                className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-4 text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
               />
             </div>
           ))}
 
-          <div className="flex justify-end">
+          <div className="flex justify-center pt-2">
             <button
               type="submit"
               disabled={pwLoading}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold px-10 py-3.5 rounded-2xl text-sm transition-colors"
             >
               {pwLoading ? (
                 <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">

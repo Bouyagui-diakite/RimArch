@@ -207,56 +207,61 @@ export default function AdminUsers() {
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowCreate(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
 
-            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200">
-              <h2 className="text-lg font-bold text-slate-800">Nouvel utilisateur</h2>
-              <button onClick={() => setShowCreate(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all">
+            <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100">
+              <div>
+                <h2 className="text-xl font-bold text-slate-800">Nouvel utilisateur</h2>
+                <p className="text-slate-400 text-sm mt-1">Créez un compte et assignez un rôle</p>
+              </div>
+              <button onClick={() => setShowCreate(false)} className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <form onSubmit={handleCreate} className="px-6 py-5 space-y-4">
+            <form onSubmit={handleCreate} className="px-10 py-8 space-y-6 max-w-sm mx-auto">
               {formError && (
-                <div className="bg-red-50 border border-red-100 text-red-600 rounded-xl px-4 py-3 text-sm">{formError}</div>
+                <div className="bg-red-50 border-2 border-red-100 text-red-600 rounded-2xl px-5 py-4 text-sm font-medium">{formError}</div>
               )}
 
               {[
-                { label: 'Nom complet', key: 'name', type: 'text', placeholder: 'Jean Dupont' },
-                { label: 'Adresse email', key: 'email', type: 'email', placeholder: 'jean@rimarch.com' },
-                { label: 'Mot de passe', key: 'password', type: 'password', placeholder: '••••••••' },
+                { label: 'Nom complet',   key: 'name',     type: 'text',     placeholder: 'Jean Dupont' },
+                { label: 'Adresse email', key: 'email',    type: 'email',    placeholder: 'jean@rimarch.com' },
+                { label: 'Mot de passe',  key: 'password', type: 'password', placeholder: '••••••••' },
               ].map(({ label, key, type, placeholder }) => (
                 <div key={key}>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">{label}</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-3">{label}</label>
                   <input
                     type={type}
                     required
                     value={form[key]}
                     onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                     placeholder={placeholder}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
+                    className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-4 text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
                   />
                 </div>
               ))}
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Rôle</label>
+                <label className="block text-sm font-bold text-slate-700 mb-3">Rôle</label>
                 <select
                   value={form.role}
                   onChange={(e) => setForm({ ...form, role: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-4 text-base text-slate-800 focus:outline-none focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
                 >
                   {roles.map((r) => <option key={r.name} value={r.name}>{r.label}</option>)}
                 </select>
               </div>
 
-              <div className="flex gap-3 pt-1">
-                <button type="button" onClick={() => setShowCreate(false)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl py-2.5 text-sm transition-colors">
+              <div className="flex justify-center gap-4 pt-2">
+                <button type="button" onClick={() => setShowCreate(false)}
+                  className="px-8 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl text-sm transition-colors">
                   Annuler
                 </button>
-                <button type="submit" disabled={formLoading} className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold rounded-xl py-2.5 text-sm transition-colors flex items-center justify-center gap-2">
+                <button type="submit" disabled={formLoading}
+                  className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold rounded-2xl text-sm transition-colors flex items-center gap-2">
                   {formLoading ? (
                     <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
