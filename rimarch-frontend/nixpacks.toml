@@ -2,10 +2,10 @@
 nixPkgs = ["nodejs_22"]
 
 [phases.install]
-cmds = ["npm install --include=dev"]
+cmds = ["npm install --include=dev && npm install -g serve"]
 
 [phases.build]
 cmds = ["npm run build"]
 
 [start]
-cmd = "npx serve dist --single --listen $PORT"
+cmd = "serve dist -l tcp://0.0.0.0:$PORT --single"
