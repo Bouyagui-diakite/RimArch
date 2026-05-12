@@ -35,7 +35,7 @@ export default function VerifyEmail() {
     api.get(`/auth/email/verify/${id}/${hash}?expires=${expires}&signature=${signature}`)
       .then(() => { setStatus('success'); setTimeout(() => navigate('/dashboard'), 3000) })
       .catch((err) => { setMessage(err.response?.data?.message || 'Lien invalide ou expiré.'); setStatus('error') })
-  }, [id, hash])
+  }, [id, hash, navigate, searchParams])
 
   const handleResend = async () => {
     setResending(true); setResendMsg('')
