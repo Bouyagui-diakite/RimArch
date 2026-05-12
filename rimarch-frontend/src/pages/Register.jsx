@@ -35,7 +35,7 @@ export default function Register() {
     try {
       await api.post('/auth/register', form)
       await login(form.email, form.password)
-      navigate('/dashboard')
+      navigate('/verify-email')
     } catch (err) {
       const data = err.response?.data
       const errs = data?.errors ? Object.values(data.errors).flat().join(' ') : data?.message
