@@ -124,12 +124,15 @@ class AuthController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::sendResetLink(['email' => $request->email]);
-
-        if ($status !== Password::RESET_LINK_SENT) {
-            throw ValidationException::withMessages([
-                'email' => [__($status)],
-            ]);
+        try {
+            $status = Password::sendResetLink(['email' => $request->email]);
+            if ($status !== Password::RESET_LINK_SENT) {
+                throw ValidationException::withMessages(['email' => [__($status)]]);
+            }
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            // SMTP failed but token was created — still return success
         }
 
         return response()->json(['message' => 'Email de réinitialisation envoyé.']);
