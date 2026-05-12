@@ -36,8 +36,9 @@ export default function UploadModal({ onClose, onSuccess }) {
       await uploadDocument(fd)
       onSuccess()
     } catch (err) {
-      const errs = err.response?.data?.errors
-      setError(errs ? Object.values(errs).flat().join(' ') : "Erreur lors de l'upload.")
+      const data = err.response?.data
+      const errs = data?.errors ? Object.values(data.errors).flat().join(' ') : null
+      setError(errs || data?.message || `Erreur lors de l'upload. (${err.response?.status ?? 'réseau'})`)
     } finally { setLoading(false) }
   }
 
