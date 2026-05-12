@@ -50,10 +50,10 @@ export default function Login() {
           </div>
 
           {/* Card */}
-          <div className="bg-[#111520] border border-[#1e2436] rounded-2xl p-10 shadow-2xl shadow-black/50">
+          <div className="bg-[#111520] border border-[#1e2436] rounded-2xl px-10 py-14 shadow-2xl shadow-black/50">
 
             {/* Heading */}
-            <div className="mb-10">
+            <div className="mb-12">
               <h2 className="text-3xl font-bold text-white tracking-tight">Connexion</h2>
               <p className="text-slate-500 text-base mt-2">Accédez à votre espace RIMArch</p>
             </div>
@@ -68,7 +68,7 @@ export default function Login() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-7">
 
               {/* Email */}
               <div>
@@ -85,7 +85,7 @@ export default function Login() {
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     placeholder="votre@email.com"
-                    className="w-full bg-[#0d1018] border border-[#1e2436] rounded-xl pl-12 pr-4 py-4 text-base text-white placeholder-slate-700 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/10 transition-all"
+                    className="w-full bg-[#0d1018] border border-[#1e2436] rounded-xl pl-12 pr-4 py-5 text-base text-white placeholder-slate-700 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/10 transition-all"
                   />
                 </div>
               </div>
@@ -110,7 +110,7 @@ export default function Login() {
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     placeholder="••••••••"
-                    className="w-full bg-[#0d1018] border border-[#1e2436] rounded-xl pl-12 pr-12 py-4 text-base text-white placeholder-slate-700 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/10 transition-all"
+                    className="w-full bg-[#0d1018] border border-[#1e2436] rounded-xl pl-12 pr-12 py-5 text-base text-white placeholder-slate-700 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/10 transition-all"
                   />
                   <button type="button" onClick={() => setShowPassword(!showPassword)}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-600 hover:text-slate-400 transition-colors">
@@ -126,7 +126,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:from-blue-700 active:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl py-4 text-base transition-all flex items-center justify-center gap-2 mt-2 shadow-lg shadow-blue-600/25"
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:from-blue-700 active:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl py-5 text-base transition-all flex items-center justify-center gap-2 mt-2 shadow-lg shadow-blue-600/25"
               >
                 {loading ? (
                   <svg className="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@ export default function Login() {
             </form>
 
             {/* Divider */}
-            <div className="relative my-7">
+            <div className="relative my-9">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-[#1e2436]" />
               </div>
@@ -156,7 +156,7 @@ export default function Login() {
 
             <Link
               to="/register"
-              className="flex items-center justify-center gap-2 w-full py-4 rounded-xl border border-[#1e2436] text-base font-semibold text-slate-400 hover:text-white hover:border-slate-600 transition-all"
+              className="flex items-center justify-center gap-2 w-full py-5 rounded-xl border border-[#1e2436] text-base font-semibold text-slate-400 hover:text-white hover:border-slate-600 transition-all"
             >
               Créer un compte gratuitement
             </Link>
