@@ -40,6 +40,7 @@ export default function Documents() {
   const [confirmDoc,  setConfirmDoc]  = useState(null)
   const [deleting,    setDeleting]    = useState(null)
   const [downloading, setDownloading] = useState(null)
+  const [downloadError, setDownloadError] = useState('')
   const [exporting,   setExporting]   = useState(false)
   const [advanced, setAdvanced] = useState({
     file_type: '', date_from: '', date_to: '', size_min: '', size_max: '', sort: 'created_at', dir: 'desc',
@@ -99,8 +100,9 @@ export default function Documents() {
 
   const handleDownload = async (doc) => {
     setDownloading(doc.id)
+    setDownloadError('')
     try {
-      const { data  } = await downloadDocument(doc.id)
+      const { data } = await downloadDocument(doc.id)
       const url  = window.URL.createObjectURL(new Blob([data]))
       const link = document.createElement('a')
       link.href  = url
@@ -109,8 +111,9 @@ export default function Documents() {
       link.click()
       link.remove()
       window.URL.revokeObjectURL(url)
-    } catch { /* silence */ }
-    finally { setDownloading(null) }
+    } catch (err) {
+      setDownloadError(err.response?.data?.message || 'Erreur lors du téléchargement.')
+    } finally { setDownloading(null) }
   }
 
   const handleExport = async () => {
@@ -176,6 +179,14 @@ export default function Documents() {
           )}
         </div>
       </div>
+
+      {/* Download error */}
+      {downloadError && (
+        <div className="flex items-center justify-between gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+          <span>{downloadError}</span>
+          <button onClick={() => setDownloadError('')} className="text-red-400 hover:text-red-600 shrink-0">✕</button>
+        </div>
+      )}
 
       {/* Barre de recherche + bouton filtre */}
       <div className="flex justify-center gap-2">
