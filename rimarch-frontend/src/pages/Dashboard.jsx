@@ -11,23 +11,23 @@ const statCards = [
 ]
 
 const ACTION_CONFIG = {
-  login:       { label: 'Connexion',      color: 'bg-emerald-50 text-emerald-700',  dot: 'bg-emerald-500' },
-  logout:      { label: 'Déconnexion',    color: 'bg-slate-100 text-slate-600',     dot: 'bg-slate-400' },
-  upload:      { label: 'Upload',         color: 'bg-blue-50 text-blue-700',        dot: 'bg-blue-500' },
-  download:    { label: 'Téléchargement', color: 'bg-violet-50 text-violet-700',    dot: 'bg-violet-500' },
-  update:      { label: 'Modification',   color: 'bg-amber-50 text-amber-700',      dot: 'bg-amber-500' },
-  delete:      { label: 'Suppression',    color: 'bg-red-50 text-red-700',          dot: 'bg-red-500' },
-  user_create: { label: 'Nouvel user',    color: 'bg-cyan-50 text-cyan-700',        dot: 'bg-cyan-500' },
-  user_delete: { label: 'User supprimé',  color: 'bg-rose-50 text-rose-700',        dot: 'bg-rose-500' },
-  role_change: { label: 'Rôle modifié',   color: 'bg-orange-50 text-orange-700',   dot: 'bg-orange-500' },
-  export:      { label: 'Export',         color: 'bg-teal-50 text-teal-700',        dot: 'bg-teal-500' },
+  login:       { label: 'Connexion',      color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400', dot: 'bg-emerald-500' },
+  logout:      { label: 'Déconnexion',    color: 'bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400',       dot: 'bg-slate-400' },
+  upload:      { label: 'Upload',         color: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',            dot: 'bg-blue-500' },
+  download:    { label: 'Téléchargement', color: 'bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-400',    dot: 'bg-violet-500' },
+  update:      { label: 'Modification',   color: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',        dot: 'bg-amber-500' },
+  delete:      { label: 'Suppression',    color: 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400',                dot: 'bg-red-500' },
+  user_create: { label: 'Nouvel user',    color: 'bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-400',            dot: 'bg-cyan-500' },
+  user_delete: { label: 'User supprimé',  color: 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400',            dot: 'bg-rose-500' },
+  role_change: { label: 'Rôle modifié',   color: 'bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400',   dot: 'bg-orange-500' },
+  export:      { label: 'Export',         color: 'bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400',            dot: 'bg-teal-500' },
 }
 
 const roleColors = {
-  admin:      'bg-red-50 text-red-700 ring-1 ring-red-100',
-  archiviste: 'bg-blue-50 text-blue-700 ring-1 ring-blue-100',
-  consultant: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100',
-  lecteur:    'bg-slate-100 text-slate-600',
+  admin:      'bg-red-50 text-red-700 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20',
+  archiviste: 'bg-blue-50 text-blue-700 ring-1 ring-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/20',
+  consultant: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20',
+  lecteur:    'bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400',
 }
 
 const formatRelative = (iso) => {
@@ -72,7 +72,7 @@ export default function Dashboard() {
   }
 
   const statValue = (label) => {
-    if (statsLoading) return <span className="w-10 h-6 bg-slate-200 rounded animate-pulse inline-block" />
+    if (statsLoading) return <span className="w-10 h-6 bg-slate-200 dark:bg-white/10 rounded animate-pulse inline-block" />
     if (!adminStats) return '—'
     if (label === 'Documents')    return adminStats.documents
     if (label === 'Utilisateurs') return adminStats.users
@@ -87,9 +87,9 @@ export default function Dashboard() {
     <div className="space-y-12">
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-[#1e2436]">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
+          <h1 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">
             {greeting()}, {user?.name?.split(' ')[0]} 👋
           </h1>
           <p className="text-slate-400 text-sm mt-2 capitalize">
@@ -113,16 +113,16 @@ export default function Dashboard() {
       {hasRole('admin') && (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
           {statCards.map((s) => (
-            <div key={s.label} className="bg-white rounded-2xl border border-slate-200 p-8 flex items-center gap-6 hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5">
+            <div key={s.label} className="bg-white dark:bg-[#111520] rounded-2xl border border-slate-200 dark:border-[#1e2436] p-8 flex items-center gap-6 hover:shadow-xl dark:hover:border-[#2a3450] transition-all duration-200 hover:-translate-y-0.5">
               <div className={`${s.color} w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-xl ${s.shadow}`}>
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {s.icon}
                 </svg>
               </div>
               <div>
-                <p className="text-3xl font-bold text-slate-800 leading-none">{statValue(s.label)}</p>
+                <p className="text-3xl font-bold text-slate-800 dark:text-white leading-none">{statValue(s.label)}</p>
                 <p className="text-slate-400 text-sm mt-2">{s.label}</p>
-                <p className="text-slate-300 text-xs mt-0.5">{s.sub}</p>
+                <p className="text-slate-300 dark:text-slate-600 text-xs mt-0.5">{s.sub}</p>
               </div>
             </div>
           ))}
@@ -133,16 +133,16 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
         {/* Recent activity */}
-        <div className="xl:col-span-2 bg-white rounded-2xl border border-slate-200 overflow-hidden">
-          <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100">
+        <div className="xl:col-span-2 bg-white dark:bg-[#111520] rounded-2xl border border-slate-200 dark:border-[#1e2436] overflow-hidden">
+          <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 dark:border-[#1e2436]">
             <div>
-              <h2 className="text-base font-bold text-slate-800">Activité récente</h2>
+              <h2 className="text-base font-bold text-slate-800 dark:text-white">Activité récente</h2>
               <p className="text-xs text-slate-400 mt-0.5">Dernières actions sur la plateforme</p>
             </div>
             {hasRole('admin') && (
               <button
                 onClick={() => navigate('/admin/logs')}
-                className="text-blue-600 text-xs font-semibold hover:text-blue-700 transition-colors bg-blue-50 px-3 py-1.5 rounded-lg"
+                className="text-blue-600 dark:text-blue-400 text-xs font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors bg-blue-50 dark:bg-blue-500/10 px-3 py-1.5 rounded-lg"
               >
                 Voir tout →
               </button>
@@ -150,26 +150,26 @@ export default function Dashboard() {
           </div>
 
           {statsLoading ? (
-            <div className="divide-y divide-slate-50">
+            <div className="divide-y divide-slate-50 dark:divide-[#1e2436]">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-center gap-5 px-8 py-5">
-                  <div className="w-10 h-10 rounded-xl bg-slate-100 animate-pulse shrink-0" />
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 animate-pulse shrink-0" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-3 bg-slate-100 rounded animate-pulse w-3/4" />
-                    <div className="h-2.5 bg-slate-100 rounded animate-pulse w-1/2" />
+                    <div className="h-3 bg-slate-100 dark:bg-white/5 rounded animate-pulse w-3/4" />
+                    <div className="h-2.5 bg-slate-100 dark:bg-white/5 rounded animate-pulse w-1/2" />
                   </div>
                 </div>
               ))}
             </div>
           ) : adminStats?.activity?.length ? (
-            <div className="divide-y divide-slate-50">
+            <div className="divide-y divide-slate-50 dark:divide-[#1e2436]">
               {adminStats.activity.map((a, i) => {
-                const cfg = ACTION_CONFIG[a.action] || { label: a.action, color: 'bg-slate-100 text-slate-600', dot: 'bg-slate-400' }
+                const cfg = ACTION_CONFIG[a.action] || { label: a.action, color: 'bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400', dot: 'bg-slate-400' }
                 return (
-                  <div key={i} className="flex items-center gap-5 px-8 py-5 hover:bg-slate-50/60 transition-colors">
+                  <div key={i} className="flex items-center gap-5 px-8 py-5 hover:bg-slate-50/60 dark:hover:bg-white/[0.02] transition-colors">
                     <div className={`w-3 h-3 rounded-full ${cfg.dot} shrink-0`} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-800 truncate">{a.description}</p>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{a.description}</p>
                       <p className="text-xs text-slate-400 mt-1">{a.user} · {formatRelative(a.created_at)}</p>
                     </div>
                     <span className={`text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 ${cfg.color}`}>
@@ -181,7 +181,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-slate-400 text-sm gap-3">
-              <svg className="w-10 h-10 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-10 h-10 text-slate-200 dark:text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
               Aucune activité enregistrée
@@ -190,37 +190,37 @@ export default function Dashboard() {
         </div>
 
         {/* Quick profile */}
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-          <div className="px-8 py-6 border-b border-slate-100">
-            <h2 className="text-base font-bold text-slate-800">Mon profil</h2>
+        <div className="bg-white dark:bg-[#111520] rounded-2xl border border-slate-200 dark:border-[#1e2436] overflow-hidden">
+          <div className="px-8 py-6 border-b border-slate-100 dark:border-[#1e2436]">
+            <h2 className="text-base font-bold text-slate-800 dark:text-white">Mon profil</h2>
             <p className="text-xs text-slate-400 mt-0.5">Informations de votre compte</p>
           </div>
           <div className="px-8 py-8">
             <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-4xl font-bold mb-5 shadow-2xl shadow-blue-200">
+              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-4xl font-bold mb-5 shadow-2xl shadow-blue-200 dark:shadow-blue-500/10">
                 {user?.name?.charAt(0).toUpperCase()}
               </div>
-              <p className="font-bold text-slate-800 text-lg">{user?.name}</p>
+              <p className="font-bold text-slate-800 dark:text-white text-lg">{user?.name}</p>
               <p className="text-slate-400 text-sm mt-1.5">{user?.email}</p>
               <div className="flex flex-wrap justify-center gap-2 mt-4">
                 {user?.roles?.map((r) => (
-                  <span key={r.name} className={`text-xs font-semibold px-3 py-1.5 rounded-full ${roleColors[r.name] || 'bg-slate-100 text-slate-600'}`}>
+                  <span key={r.name} className={`text-xs font-semibold px-3 py-1.5 rounded-full ${roleColors[r.name] || 'bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400'}`}>
                     {r.label}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="mt-8 pt-7 border-t border-slate-100 space-y-5">
+            <div className="mt-8 pt-7 border-t border-slate-100 dark:border-[#1e2436] space-y-5">
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 text-sm">Documents uploadés</span>
-                <span className="text-slate-800 text-sm font-bold">
+                <span className="text-slate-800 dark:text-white text-sm font-bold">
                   {user?.documents_count ?? '—'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 text-sm">Dernière connexion</span>
-                <span className="text-slate-800 text-xs font-semibold text-right max-w-[140px]">
+                <span className="text-slate-800 dark:text-slate-300 text-xs font-semibold text-right max-w-[140px]">
                   {formatLastLogin(user?.last_login)}
                 </span>
               </div>
@@ -228,7 +228,7 @@ export default function Dashboard() {
 
             <button
               onClick={() => navigate('/profil')}
-              className="w-full mt-7 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all"
+              className="w-full mt-7 py-3 rounded-xl border border-slate-200 dark:border-[#1e2436] text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300 dark:hover:border-[#2a3450] transition-all"
             >
               Modifier mon profil
             </button>
@@ -238,9 +238,9 @@ export default function Dashboard() {
 
       {/* Upload chart — admin only */}
       {hasRole('admin') && adminStats?.uploads_chart && (
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-          <div className="px-8 py-6 border-b border-slate-100">
-            <h2 className="text-base font-bold text-slate-800">Uploads — 7 derniers jours</h2>
+        <div className="bg-white dark:bg-[#111520] rounded-2xl border border-slate-200 dark:border-[#1e2436] overflow-hidden">
+          <div className="px-8 py-6 border-b border-slate-100 dark:border-[#1e2436]">
+            <h2 className="text-base font-bold text-slate-800 dark:text-white">Uploads — 7 derniers jours</h2>
             <p className="text-xs text-slate-400 mt-0.5">Nombre de documents archivés par jour</p>
           </div>
           <div className="px-8 py-8">
