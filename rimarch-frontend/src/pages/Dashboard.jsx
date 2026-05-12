@@ -48,6 +48,7 @@ const formatLastLogin = (iso) => {
 
 export default function Dashboard() {
   const { user, hasRole } = useAuth()
+  const canUpload = hasRole('admin') || hasRole('archiviste')
   const navigate = useNavigate()
   const [adminStats, setAdminStats] = useState(null)
   const [statsLoading, setStatsLoading] = useState(true)
@@ -95,15 +96,17 @@ export default function Dashboard() {
             {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         </div>
-        <button
-          onClick={() => navigate('/documents')}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold px-6 py-3.5 rounded-xl transition-colors shadow-lg shadow-blue-600/20 self-start sm:self-auto"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Nouveau document
-        </button>
+        {canUpload && (
+          <button
+            onClick={() => navigate('/documents')}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold px-6 py-3.5 rounded-xl transition-colors shadow-lg shadow-blue-600/20 self-start sm:self-auto"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Nouveau document
+          </button>
+        )}
       </div>
 
       {/* Stat cards — admin only */}
