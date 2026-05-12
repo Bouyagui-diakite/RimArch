@@ -129,7 +129,7 @@ export default function Documents() {
     } finally { setExporting(false) }
   }
 
-  const canUpload  = hasRole('admin') || hasRole('archiviste')
+  const canUpload  = hasRole('admin') || hasRole('archiviste') || hasRole('consultant')
   const canDelete  = hasRole('admin') || hasRole('archiviste')
 
   return (

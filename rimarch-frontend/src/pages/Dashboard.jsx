@@ -48,7 +48,7 @@ const formatLastLogin = (iso) => {
 
 export default function Dashboard() {
   const { user, hasRole } = useAuth()
-  const canUpload = hasRole('admin') || hasRole('archiviste')
+  const canUpload = hasRole('admin') || hasRole('archiviste') || hasRole('consultant')
   const navigate = useNavigate()
   const [adminStats, setAdminStats] = useState(null)
   const [statsLoading, setStatsLoading] = useState(true)
