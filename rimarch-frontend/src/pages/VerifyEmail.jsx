@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom'
 import api from '../api/axios'
+import { useAuth } from '../hooks/useAuth'
 
 const Spinner = () => (
   <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -13,6 +14,12 @@ export default function VerifyEmail() {
   const { id, hash }   = useParams()
   const [searchParams] = useSearchParams()
   const navigate       = useNavigate()
+  const { logout }     = useAuth()
+
+  const handleBackToLogin = async () => {
+    await logout()
+    navigate('/login')
+  }
 
   const [status, setStatus]     = useState('idle')
   const [message, setMessage]   = useState('')
@@ -116,9 +123,9 @@ export default function VerifyEmail() {
               {resending ? 'Envoi…' : "Renvoyer l'email"}
             </button>
             {resendMsg && <p className="text-sm text-emerald-400 font-medium mt-4">{resendMsg}</p>}
-            <Link to="/login" className="block mt-5 text-slate-600 text-xs hover:text-slate-400 transition-colors">
+            <button onClick={handleBackToLogin} className="block mx-auto mt-5 text-slate-600 text-xs hover:text-slate-400 transition-colors">
               ← Retour à la connexion
-            </Link>
+            </button>
           </>
         )}
 
