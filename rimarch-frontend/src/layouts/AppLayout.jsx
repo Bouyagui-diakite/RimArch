@@ -60,43 +60,42 @@ export default function AppLayout({ children }) {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-[#0a0d14] overflow-hidden">
 
-      {/* Overlay mobile */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-20 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-black/60 z-20 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* ── Sidebar ── */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-30 w-72 bg-slate-900 flex flex-col transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      {/* Sidebar */}
+      <aside className={`fixed lg:static inset-y-0 left-0 z-30 w-64 bg-[#0d1018] border-r border-[#1e2436] flex flex-col transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
 
         {/* Logo */}
-        <div className="flex items-center gap-4 px-7 py-7 border-b border-white/5">
-          <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-xl shrink-0 shadow-lg shadow-blue-600/30">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex items-center gap-3.5 px-6 py-6 border-b border-[#1e2436]">
+          <div className="flex items-center justify-center w-9 h-9 bg-blue-600 rounded-xl shrink-0 shadow-lg shadow-blue-600/30">
+            <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
                 d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
             </svg>
           </div>
           <div>
-            <p className="text-white font-bold text-base leading-none tracking-wide">RIMArch</p>
-            <p className="text-slate-500 text-xs mt-1.5">Gestion des Archives</p>
+            <p className="text-white font-bold text-sm leading-none tracking-wide">RIMArch</p>
+            <p className="text-slate-600 text-xs mt-1">Gestion des Archives</p>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-5 py-7 space-y-1.5 overflow-y-auto">
-          <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 mb-4">Menu</p>
+        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+          <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 mb-3">Menu</p>
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 ${
+                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
                   isActive
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    : 'text-slate-500 hover:text-white hover:bg-white/5'
                 }`
               }
             >
@@ -107,17 +106,17 @@ export default function AppLayout({ children }) {
 
           {hasRole('admin') && (
             <>
-              <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 pt-7 mb-4">Administration</p>
+              <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 pt-6 mb-3">Administration</p>
               {adminItems.map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}
                   onClick={() => setSidebarOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 ${
+                    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
                       isActive
                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        : 'text-slate-500 hover:text-white hover:bg-white/5'
                     }`
                   }
                 >
@@ -129,18 +128,18 @@ export default function AppLayout({ children }) {
           )}
         </nav>
 
-        {/* Profil */}
-        <div className="p-5 border-t border-white/5">
+        {/* User */}
+        <div className="p-4 border-t border-[#1e2436]">
           <div
             onClick={() => { navigate('/profil'); setSidebarOpen(false) }}
-            className="flex items-center gap-3.5 p-3.5 rounded-xl hover:bg-white/5 cursor-pointer transition-all group"
+            className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition-all group"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white text-sm font-semibold truncate">{user?.name}</p>
-              <div className="flex gap-1 mt-1 flex-wrap">
+              <div className="flex gap-1 mt-0.5 flex-wrap">
                 {user?.roles?.map((r) => (
                   <span key={r.name} className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${roleColors[r.name] || 'bg-slate-500/20 text-slate-400'}`}>
                     {r.label}
@@ -162,26 +161,21 @@ export default function AppLayout({ children }) {
         </div>
       </aside>
 
-      {/* ── Contenu principal ── */}
+      {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
-        {/* Topbar — visible partout */}
-        <header className="flex items-center justify-between px-6 py-3 bg-white border-b border-slate-200 shrink-0">
-          {/* Bouton menu mobile */}
+        {/* Topbar */}
+        <header className="flex items-center justify-between px-6 py-4 bg-[#0d1018] border-b border-[#1e2436] shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-slate-500 hover:text-slate-700"
+            className="lg:hidden text-slate-500 hover:text-white transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="lg:hidden font-bold text-slate-800">RIMArch</span>
-
-          {/* Espace vide desktop */}
+          <span className="lg:hidden font-bold text-white">RIMArch</span>
           <div className="hidden lg:block" />
-
-          {/* Cloche à droite */}
           <div className="flex items-center gap-3">
             <NotificationBell />
           </div>
@@ -196,4 +190,3 @@ export default function AppLayout({ children }) {
     </div>
   )
 }
-
