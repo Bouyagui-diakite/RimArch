@@ -61,13 +61,20 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
+  const refreshUser = async () => {
+    const { data } = await api.get('/auth/me')
+    setUser(data)
+    localStorage.setItem('user', JSON.stringify(data))
+    return data
+  }
+
   const hasRole = (role) => {
     if (!user?.roles) return false
     return user.roles.some((r) => r.name === role)
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, hasRole }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, refreshUser, hasRole }}>
       {children}
     </AuthContext.Provider>
   )

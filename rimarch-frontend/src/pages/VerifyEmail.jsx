@@ -14,7 +14,7 @@ export default function VerifyEmail() {
   const { id, hash }   = useParams()
   const [searchParams] = useSearchParams()
   const navigate       = useNavigate()
-  const { logout }     = useAuth()
+  const { logout, refreshUser } = useAuth()
 
   const handleBackToLogin = async () => {
     await logout()
@@ -33,7 +33,7 @@ export default function VerifyEmail() {
     const signature = searchParams.get('signature')
 
     api.get(`/auth/email/verify/${id}/${hash}?expires=${expires}&signature=${signature}`)
-      .then(() => { setStatus('success'); setTimeout(() => navigate('/dashboard'), 3000) })
+      .then(async () => { setStatus('success'); await refreshUser(); setTimeout(() => navigate('/dashboard'), 3000) })
       .catch((err) => { setMessage(err.response?.data?.message || 'Lien invalide ou expiré.'); setStatus('error') })
   }, [id, hash, navigate, searchParams])
 
@@ -133,3 +133,5 @@ export default function VerifyEmail() {
     </div>
   )
 }
+
+
