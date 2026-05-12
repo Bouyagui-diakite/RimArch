@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import AuthLeftPanel from '../components/AuthLeftPanel'
+import api from '../api/axios'
 
 function EyeIcon({ open }) {
   return open
@@ -32,21 +33,13 @@ export default function Register() {
     setError('')
     setLoading(true)
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(form),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        const errs = data.errors ? Object.values(data.errors).flat().join(' ') : data.message
-        setError(errs || "Erreur lors de l'inscription.")
-        return
-      }
+      await api.post('/auth/register', form)
       await login(form.email, form.password)
       navigate('/verify-email')
-    } catch {
-      setError('Erreur réseau. Réessayez.')
+    } catch (err) {
+      const data = err.response?.data
+      const errs = data?.errors ? Object.values(data.errors).flat().join(' ') : data?.message
+      setError(errs || "Erreur lors de l'inscription.")
     } finally {
       setLoading(false)
     }
