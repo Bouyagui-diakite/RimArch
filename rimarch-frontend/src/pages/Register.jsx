@@ -10,7 +10,13 @@ function EyeIcon({ open }) {
     : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
 }
 
-const inputBase = "w-full bg-[#0d1018] border border-[#1e2436] rounded-xl py-5 text-base text-white placeholder-slate-700 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/10 transition-all"
+const inputBase = "w-full bg-[#0d1018] border border-[#1e2436] rounded-xl py-6 text-base text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/10 transition-all"
+
+const IconSlot = ({ children }) => (
+  <span className="absolute inset-y-0 left-0 pl-4 pr-3 flex items-center pointer-events-none text-slate-500 border-r border-[#1e2436]">
+    {children}
+  </span>
+)
 
 export default function Register() {
   const { login } = useAuth()
@@ -54,7 +60,7 @@ export default function Register() {
         <div className="w-full max-w-xl">
 
           {/* Card */}
-          <div className="bg-[#111520] border border-[#1e2436] rounded-2xl px-10 py-12 shadow-2xl shadow-black/50">
+          <div className="bg-[#111520] border border-[#1e2436] rounded-2xl px-10 py-16 shadow-2xl shadow-black/50">
 
             {/* Heading */}
             <div className="mb-12">
@@ -72,20 +78,20 @@ export default function Register() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-7">
+            <form onSubmit={handleSubmit} className="space-y-9">
 
               {/* Full name */}
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">Nom complet</label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-600">
+                  <IconSlot>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                  </span>
+                  </IconSlot>
                   <input type="text" required value={form.name} onChange={set('name')}
                     placeholder="Jean Dupont"
-                    className={`${inputBase} pl-12 pr-4`}
+                    className={`${inputBase} pl-14 pr-4`}
                   />
                 </div>
               </div>
@@ -94,14 +100,14 @@ export default function Register() {
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">Adresse email</label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-600">
+                  <IconSlot>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                  </span>
+                  </IconSlot>
                   <input type="email" required value={form.email} onChange={set('email')}
                     placeholder="votre@email.com"
-                    className={`${inputBase} pl-12 pr-4`}
+                    className={`${inputBase} pl-14 pr-4`}
                   />
                 </div>
               </div>
@@ -110,14 +116,14 @@ export default function Register() {
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">Mot de passe</label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-600">
+                  <IconSlot>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
-                  </span>
+                  </IconSlot>
                   <input type={showPassword ? 'text' : 'password'} required value={form.password} onChange={set('password')}
                     placeholder="••••••••"
-                    className={`${inputBase} pl-12 pr-12`}
+                    className={`${inputBase} pl-14 pr-12`}
                   />
                   <button type="button" onClick={() => setShowPassword(!showPassword)}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-600 hover:text-slate-400 transition-colors">
@@ -130,17 +136,17 @@ export default function Register() {
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">Confirmer le mot de passe</label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-600">
+                  <span className="absolute inset-y-0 left-0 pl-4 pr-3 flex items-center pointer-events-none border-r border-[#1e2436]">
                     {form.password_confirmation
                       ? passwordMatch
                         ? <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                         : <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                      : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                      : <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                     }
                   </span>
                   <input type={showPassword ? 'text' : 'password'} required value={form.password_confirmation} onChange={set('password_confirmation')}
                     placeholder="••••••••"
-                    className={`${inputBase} pl-11 pr-4 ${
+                    className={`${inputBase} pl-14 pr-4 ${
                       form.password_confirmation
                         ? passwordMatch
                           ? 'border-emerald-500/40 focus:border-emerald-500/60'
