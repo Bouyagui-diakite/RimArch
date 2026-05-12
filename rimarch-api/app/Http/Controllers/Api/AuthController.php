@@ -30,7 +30,7 @@ class AuthController extends Controller
         ]);
 
         $user->assignRole($data['role'] ?? 'lecteur');
-        try { $user->sendEmailVerificationNotification(); } catch (\Exception $e) {}
+        try { $user->sendEmailVerificationNotification(); } catch (\Throwable $e) {}
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -126,7 +126,7 @@ class AuthController extends Controller
 
         try {
             Password::sendResetLink(['email' => $request->email]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // Never reveal whether the email exists or if SMTP failed
         }
 
