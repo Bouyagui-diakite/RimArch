@@ -21,15 +21,14 @@ export default function VerifyEmail() {
     navigate('/login')
   }
 
-  const [status, setStatus]     = useState('idle')
-  const [message, setMessage]   = useState('')
+  const [status, setStatus]       = useState(() => (id && hash) ? 'verifying' : 'waiting')
+  const [message, setMessage]     = useState('')
   const [resending, setResending] = useState(false)
   const [resendMsg, setResendMsg] = useState('')
 
   useEffect(() => {
-    if (!id || !hash) { setStatus('waiting'); return }
+    if (!id || !hash) return
 
-    setStatus('verifying')
     const expires   = searchParams.get('expires')
     const signature = searchParams.get('signature')
 
