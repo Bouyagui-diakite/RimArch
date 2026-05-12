@@ -112,7 +112,13 @@ export default function Documents() {
       link.remove()
       window.URL.revokeObjectURL(url)
     } catch (err) {
-      setDownloadError(err.response?.data?.message || 'Erreur lors du téléchargement.')
+      let msg = 'Erreur lors du téléchargement.'
+      if (err.response?.data instanceof Blob) {
+        try { const json = JSON.parse(await err.response.data.text()); msg = json.message || msg } catch {}
+      } else {
+        msg = err.response?.data?.message || msg
+      }
+      setDownloadError(msg)
     } finally { setDownloading(null) }
   }
 
