@@ -33,9 +33,10 @@ class AdminController extends Controller
         ]);
 
         $user = User::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
-            'password' => Hash::make($data['password']),
+            'name'              => $data['name'],
+            'email'             => $data['email'],
+            'password'          => Hash::make($data['password']),
+            'email_verified_at' => now(),
         ]);
 
         $user->assignRole($data['role']);
@@ -53,6 +54,9 @@ class AdminController extends Controller
 
         $user->roles()->detach();
         $user->assignRole($data['role']);
+        if (!$user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
         AuditLog::log('role_change', "Rôle de \"{$user->name}\" changé en \"{$data['role']}\"", $user);
         AppNotification::send($user->id, 'role_change', 'Votre rôle a été modifié', "Votre rôle a été changé en \"{$data['role']}\" par un administrateur.", '/profil');
 
