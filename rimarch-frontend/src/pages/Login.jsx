@@ -35,8 +35,8 @@ export default function Login() {
       <AuthLeftPanel mode="login" />
 
       {/* Right panel */}
-      <div className="flex-1 flex items-center justify-center bg-[#0a0d14] px-6 py-12">
-        <div className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center bg-[#0a0d14] px-8 py-12">
+        <div className="w-full max-w-xl">
 
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2.5 mb-10">
@@ -50,12 +50,12 @@ export default function Login() {
           </div>
 
           {/* Card */}
-          <div className="bg-[#111520] border border-[#1e2436] rounded-2xl p-8 shadow-2xl shadow-black/50">
+          <div className="bg-[#111520] border border-[#1e2436] rounded-2xl p-10 shadow-2xl shadow-black/50">
 
             {/* Heading */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-white tracking-tight">Connexion</h2>
-              <p className="text-slate-500 text-sm mt-1.5">Accédez à votre espace RIMArch</p>
+            <div className="mb-10">
+              <h2 className="text-3xl font-bold text-white tracking-tight">Connexion</h2>
+              <p className="text-slate-500 text-base mt-2">Accédez à votre espace RIMArch</p>
             </div>
 
             {/* Error */}
@@ -68,11 +68,11 @@ export default function Login() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-6">
 
               {/* Email */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Email</label>
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">Email</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-600">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,15 +85,15 @@ export default function Login() {
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     placeholder="votre@email.com"
-                    className="w-full bg-[#0d1018] border border-[#1e2436] rounded-xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-slate-700 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/10 transition-all"
+                    className="w-full bg-[#0d1018] border border-[#1e2436] rounded-xl pl-12 pr-4 py-4 text-base text-white placeholder-slate-700 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/10 transition-all"
                   />
                 </div>
               </div>
 
               {/* Password */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Mot de passe</label>
+                <div className="flex items-center justify-between mb-2.5">
+                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0">Mot de passe</label>
                   <Link to="/forgot-password" className="text-xs text-blue-500 hover:text-blue-400 transition-colors font-medium">
                     Oublié ?
                   </Link>
@@ -110,7 +110,7 @@ export default function Login() {
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     placeholder="••••••••"
-                    className="w-full bg-[#0d1018] border border-[#1e2436] rounded-xl pl-11 pr-12 py-3.5 text-sm text-white placeholder-slate-700 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/10 transition-all"
+                    className="w-full bg-[#0d1018] border border-[#1e2436] rounded-xl pl-12 pr-12 py-4 text-base text-white placeholder-slate-700 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/10 transition-all"
                   />
                   <button type="button" onClick={() => setShowPassword(!showPassword)}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-600 hover:text-slate-400 transition-colors">
@@ -126,7 +126,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:from-blue-700 active:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl py-3.5 text-sm transition-all flex items-center justify-center gap-2 mt-2 shadow-lg shadow-blue-600/25"
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:from-blue-700 active:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl py-4 text-base transition-all flex items-center justify-center gap-2 mt-2 shadow-lg shadow-blue-600/25"
               >
                 {loading ? (
                   <svg className="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
@@ -156,7 +156,7 @@ export default function Login() {
 
             <Link
               to="/register"
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-[#1e2436] text-sm font-semibold text-slate-400 hover:text-white hover:border-slate-600 transition-all"
+              className="flex items-center justify-center gap-2 w-full py-4 rounded-xl border border-[#1e2436] text-base font-semibold text-slate-400 hover:text-white hover:border-slate-600 transition-all"
             >
               Créer un compte gratuitement
             </Link>
