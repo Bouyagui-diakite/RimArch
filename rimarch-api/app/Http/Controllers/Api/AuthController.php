@@ -30,7 +30,7 @@ class AuthController extends Controller
         ]);
 
         $user->assignRole($data['role'] ?? 'lecteur');
-        try { $user->sendEmailVerificationNotification(); } catch (\Throwable $e) { \Log::error('Email verification failed: ' . $e->getMessage()); }
+        try { $user->sendEmailVerificationNotification(); } catch (\Throwable $e) {}
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
