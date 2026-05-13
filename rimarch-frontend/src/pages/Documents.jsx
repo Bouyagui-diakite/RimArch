@@ -28,6 +28,13 @@ const formatSize = (bytes) => {
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
 
+const Spinner = ({ className = 'w-4 h-4' }) => (
+  <svg className={`animate-spin ${className}`} fill="none" viewBox="0 0 24 24">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+  </svg>
+)
+
 export default function Documents() {
   const { hasRole } = useAuth()
   const { addToast } = useToast()
@@ -40,7 +47,8 @@ export default function Documents() {
   const [page, setPage]           = useState(1)
   const [showUpload, setShowUpload]     = useState(false)
   const [showAdvanced, setShowAdvanced] = useState(false)
-  const filterRef = useRef(null)
+  const filterRef    = useRef(null)
+  const selectAllRef = useRef(null)
   const [confirmDoc,  setConfirmDoc]  = useState(null)
   const [deleting,    setDeleting]    = useState(null)
   const [downloading, setDownloading] = useState(null)
@@ -49,6 +57,13 @@ export default function Documents() {
   const [droppedFile, setDroppedFile] = useState(null)
   const [pageDragOver, setPageDragOver] = useState(false)
   const dragCounter = useRef(0)
+
+  // Bulk select
+  const [selectedIds,     setSelectedIds]     = useState(new Set())
+  const [bulkDownloading, setBulkDownloading] = useState(false)
+  const [bulkDeleting,    setBulkDeleting]    = useState(false)
+  const [showBulkConfirm, setShowBulkConfirm] = useState(false)
+
   const [advanced, setAdvanced] = useState({
     file_type: '', date_from: '', date_to: '', size_min: '', size_max: '', sort: 'created_at', dir: 'desc',
   })
@@ -68,6 +83,10 @@ export default function Documents() {
 
   const [tick, setTick] = useState(0)
   const fetchDocs = () => setTick(t => t + 1)
+
+  useEffect(() => {
+    setSelectedIds(new Set())
+  }, [page, debouncedSearch, categorie, advanced, tick])
 
   useEffect(() => {
     let cancelled = false
@@ -92,6 +111,28 @@ export default function Documents() {
 
     return () => { cancelled = true }
   }, [page, debouncedSearch, categorie, advanced, tick])
+
+  // Keep select-all checkbox indeterminate state in sync
+  useEffect(() => {
+    if (!selectAllRef.current) return
+    const allSelected  = docs.length > 0 && docs.every(d => selectedIds.has(d.id))
+    const someSelected = docs.some(d => selectedIds.has(d.id))
+    selectAllRef.current.indeterminate = someSelected && !allSelected
+    selectAllRef.current.checked = allSelected
+  }, [selectedIds, docs])
+
+  const toggleSelect = (id) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  const toggleAll = () => {
+    const allSelected = docs.length > 0 && docs.every(d => selectedIds.has(d.id))
+    setSelectedIds(allSelected ? new Set() : new Set(docs.map(d => d.id)))
+  }
 
   const handleDelete = async () => {
     setDeleting(confirmDoc.id)
@@ -125,6 +166,38 @@ export default function Documents() {
       }
       setDownloadError(msg)
     } finally { setDownloading(null) }
+  }
+
+  const handleBulkDownload = async () => {
+    setBulkDownloading(true)
+    try {
+      const JSZip = (await import('jszip')).default
+      const zip   = new JSZip()
+      const selected = docs.filter(d => selectedIds.has(d.id))
+      await Promise.all(selected.map(async (doc) => {
+        const { data } = await downloadDocument(doc.id)
+        zip.file(doc.file_name, data)
+      }))
+      const blob = await zip.generateAsync({ type: 'blob' })
+      downloadBlob(blob, `rimarch_selection_${new Date().toISOString().slice(0, 10)}.zip`)
+      setSelectedIds(new Set())
+    } catch {
+      addToast('Erreur lors du téléchargement groupé.', 'error')
+    } finally { setBulkDownloading(false) }
+  }
+
+  const handleBulkDelete = async () => {
+    const count = selectedIds.size
+    setBulkDeleting(true)
+    try {
+      await Promise.all([...selectedIds].map(id => deleteDocument(id)))
+      setSelectedIds(new Set())
+      setShowBulkConfirm(false)
+      fetchDocs()
+      addToast(`${count} document${count > 1 ? 's' : ''} supprimé${count > 1 ? 's' : ''}.`)
+    } catch {
+      addToast('Erreur lors de la suppression groupée.', 'error')
+    } finally { setBulkDeleting(false) }
   }
 
   const handleExport = async () => {
@@ -201,12 +274,7 @@ export default function Documents() {
         <div className="flex items-center gap-3 self-start sm:self-auto">
           <button onClick={handleExport} disabled={exporting}
             className="flex items-center gap-2 bg-white dark:bg-[#111520] hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-60 text-slate-700 dark:text-slate-300 text-sm font-semibold px-4 py-3 rounded-xl transition-colors border border-slate-200 dark:border-[#1e2436] shadow-sm">
-            {exporting ? (
-              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-              </svg>
-            ) : (
+            {exporting ? <Spinner /> : (
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -230,6 +298,44 @@ export default function Documents() {
         <div className="flex items-center justify-between gap-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400 rounded-xl px-4 py-3 text-sm">
           <span>{downloadError}</span>
           <button onClick={() => setDownloadError('')} className="text-red-400 hover:text-red-600 shrink-0">✕</button>
+        </div>
+      )}
+
+      {/* Bulk action bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center justify-between gap-4 bg-blue-600 text-white px-6 py-3.5 rounded-2xl shadow-lg shadow-blue-600/20">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-bold">
+              {selectedIds.size} document{selectedIds.size > 1 ? 's' : ''} sélectionné{selectedIds.size > 1 ? 's' : ''}
+            </span>
+            <button onClick={() => setSelectedIds(new Set())}
+              className="text-white/70 hover:text-white text-xs underline transition-colors">
+              Tout désélectionner
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={handleBulkDownload} disabled={bulkDownloading}
+              className="flex items-center gap-2 bg-white/15 hover:bg-white/25 disabled:opacity-60 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
+              {bulkDownloading ? <Spinner /> : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              )}
+              Télécharger ({selectedIds.size})
+            </button>
+            {canDelete && (
+              <button onClick={() => setShowBulkConfirm(true)} disabled={bulkDeleting}
+                className="flex items-center gap-2 bg-white/15 hover:bg-red-500 disabled:opacity-60 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
+                {bulkDeleting ? <Spinner /> : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                )}
+                Supprimer ({selectedIds.size})
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -345,10 +451,7 @@ export default function Documents() {
       <div className="bg-white dark:bg-[#111520] rounded-2xl border border-slate-200 dark:border-[#1e2436] overflow-hidden shadow-sm">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <svg className="animate-spin w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-            </svg>
+            <Spinner className="w-8 h-8 text-blue-500" />
           </div>
         ) : docs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -365,20 +468,50 @@ export default function Documents() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-12 gap-4 px-8 py-4 bg-slate-50 dark:bg-[#0d1018] border-b border-slate-100 dark:border-[#1e2436] text-xs font-bold text-slate-400 uppercase tracking-widest">
-              <div className="col-span-5">Document</div>
+            {/* Table header */}
+            <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-slate-50 dark:bg-[#0d1018] border-b border-slate-100 dark:border-[#1e2436] text-xs font-bold text-slate-400 uppercase tracking-widest items-center">
+              <div className="col-span-1 flex items-center">
+                <input
+                  ref={selectAllRef}
+                  type="checkbox"
+                  onChange={toggleAll}
+                  className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 cursor-pointer accent-blue-600"
+                />
+              </div>
+              <div className="col-span-4">Document</div>
               <div className="col-span-2">Catégorie</div>
               <div className="col-span-2">Uploadé par</div>
               <div className="col-span-1">Taille</div>
               <div className="col-span-1">Date</div>
               <div className="col-span-1 text-right">Actions</div>
             </div>
+
+            {/* Rows */}
             <div className="divide-y divide-slate-50 dark:divide-[#1e2436]">
               {docs.map((doc) => {
-                const icon = fileIcon(doc.file_type)
+                const icon       = fileIcon(doc.file_type)
+                const isSelected = selectedIds.has(doc.id)
                 return (
-                  <div key={doc.id} className="grid grid-cols-12 gap-4 px-8 py-5 items-center hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group">
-                    <div className="col-span-5 flex items-center gap-3 min-w-0 cursor-pointer" onClick={() => navigate(`/documents/${doc.id}`)}>
+                  <div
+                    key={doc.id}
+                    className={`grid grid-cols-12 gap-4 px-6 py-5 items-center transition-colors group ${
+                      isSelected
+                        ? 'bg-blue-50/60 dark:bg-blue-500/5'
+                        : 'hover:bg-slate-50 dark:hover:bg-white/[0.02]'
+                    }`}
+                  >
+                    {/* Checkbox */}
+                    <div className="col-span-1 flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleSelect(doc.id)}
+                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 cursor-pointer accent-blue-600"
+                      />
+                    </div>
+
+                    {/* Document */}
+                    <div className="col-span-4 flex items-center gap-3 min-w-0 cursor-pointer" onClick={() => navigate(`/documents/${doc.id}`)}>
                       <div className={`w-9 h-9 rounded-xl ${icon.bg} flex items-center justify-center shrink-0`}>
                         <span className={`text-xs font-bold ${icon.text}`}>{icon.label}</span>
                       </div>
@@ -387,28 +520,33 @@ export default function Documents() {
                         <p className="text-xs text-slate-400 truncate mt-0.5">{doc.file_name}</p>
                       </div>
                     </div>
+
+                    {/* Catégorie */}
                     <div className="col-span-2">
                       <span className="bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 text-xs font-medium px-2.5 py-1 rounded-full">
                         {doc.categorie}
                       </span>
                     </div>
+
+                    {/* Uploader */}
                     <div className="col-span-2 flex items-center gap-2 min-w-0">
                       <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
                         {doc.uploader?.name?.charAt(0)}
                       </div>
                       <span className="text-sm text-slate-600 dark:text-slate-400 truncate">{doc.uploader?.name}</span>
                     </div>
+
+                    {/* Size */}
                     <div className="col-span-1 text-sm text-slate-500">{formatSize(doc.file_size)}</div>
+
+                    {/* Date */}
                     <div className="col-span-1 text-sm text-slate-500">{formatDate(doc.created_at)}</div>
+
+                    {/* Actions */}
                     <div className="col-span-1 flex items-center justify-end gap-1">
                       <button onClick={() => handleDownload(doc)} disabled={downloading === doc.id} title="Télécharger"
                         className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all disabled:opacity-40">
-                        {downloading === doc.id ? (
-                          <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                          </svg>
-                        ) : (
+                        {downloading === doc.id ? <Spinner /> : (
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                           </svg>
@@ -417,12 +555,7 @@ export default function Documents() {
                       {canDelete && (
                         <button onClick={() => setConfirmDoc(doc)} disabled={deleting === doc.id} title="Supprimer"
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all disabled:opacity-40">
-                          {deleting === doc.id ? (
-                            <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                            </svg>
-                          ) : (
+                          {deleting === doc.id ? <Spinner /> : (
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -456,6 +589,7 @@ export default function Documents() {
         </div>
       )}
 
+      {/* Single delete confirm */}
       {confirmDoc && (
         <ConfirmModal
           title="Supprimer le document"
@@ -464,6 +598,18 @@ export default function Documents() {
           loading={!!deleting}
           onConfirm={handleDelete}
           onCancel={() => setConfirmDoc(null)}
+        />
+      )}
+
+      {/* Bulk delete confirm */}
+      {showBulkConfirm && (
+        <ConfirmModal
+          title="Supprimer la sélection"
+          message={`Êtes-vous sûr de vouloir supprimer ${selectedIds.size} document${selectedIds.size > 1 ? 's' : ''} ? Cette action est irréversible.`}
+          confirmLabel={`Supprimer ${selectedIds.size} document${selectedIds.size > 1 ? 's' : ''}`}
+          loading={bulkDeleting}
+          onConfirm={handleBulkDelete}
+          onCancel={() => setShowBulkConfirm(false)}
         />
       )}
 
