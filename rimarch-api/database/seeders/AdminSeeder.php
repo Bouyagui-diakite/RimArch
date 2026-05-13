@@ -20,6 +20,10 @@ class AdminSeeder extends Seeder
             ]
         );
 
+        if (!$admin->hasVerifiedEmail()) {
+            $admin->markEmailAsVerified();
+        }
+
         $role = Role::where('name', 'admin')->first();
 
         if ($role && !$admin->roles()->where('role_id', $role->id)->exists()) {
