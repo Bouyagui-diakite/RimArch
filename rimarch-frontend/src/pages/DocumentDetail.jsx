@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getDocument, deleteDocument, downloadDocument, previewDocument, updateDocument } from '../api/documents'
+import { getDocument, deleteDocument, downloadDocument, updateDocument } from '../api/documents'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../hooks/useToast'
 import ConfirmModal from '../components/ConfirmModal'
@@ -82,7 +82,7 @@ export default function DocumentDetail() {
     if (previewUrl) { setPreviewing(true); return }
     setPreviewLoading(true)
     try {
-      const { data } = await previewDocument(doc.id)
+      const { data } = await downloadDocument(doc.id)
       const mime = doc.file_type || 'application/octet-stream'
       const url  = URL.createObjectURL(new Blob([data], { type: mime }))
       setPreviewUrl(url)
