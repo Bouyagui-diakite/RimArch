@@ -205,7 +205,7 @@ export default function AppLayout({ children }) {
         </header>
 
         <main className="flex-1 overflow-y-auto">
-          <div className="px-6 py-8 lg:px-10 lg:py-10 max-w-7xl mx-auto">
+          <div className="px-8 py-10 lg:px-14 lg:py-12 max-w-7xl mx-auto">
             {children}
           </div>
         </main>
