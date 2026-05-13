@@ -46,6 +46,9 @@ export default function Documents() {
   const [downloading, setDownloading] = useState(null)
   const [downloadError, setDownloadError] = useState('')
   const [exporting,   setExporting]   = useState(false)
+  const [droppedFile, setDroppedFile] = useState(null)
+  const [pageDragOver, setPageDragOver] = useState(false)
+  const dragCounter = useRef(0)
   const [advanced, setAdvanced] = useState({
     file_type: '', date_from: '', date_to: '', size_min: '', size_max: '', sort: 'created_at', dir: 'desc',
   })
@@ -143,11 +146,49 @@ export default function Documents() {
   const canUpload = hasRole('admin') || hasRole('archiviste') || hasRole('consultant')
   const canDelete = hasRole('admin') || hasRole('archiviste')
 
+  const handlePageDragEnter = (e) => {
+    e.preventDefault()
+    dragCounter.current++
+    if (e.dataTransfer.items?.length > 0) setPageDragOver(true)
+  }
+  const handlePageDragLeave = (e) => {
+    e.preventDefault()
+    dragCounter.current--
+    if (dragCounter.current === 0) setPageDragOver(false)
+  }
+  const handlePageDragOver = (e) => { e.preventDefault() }
+  const handlePageDrop = (e) => {
+    e.preventDefault()
+    dragCounter.current = 0
+    setPageDragOver(false)
+    const f = e.dataTransfer.files[0]
+    if (f) { setDroppedFile(f); setShowUpload(true) }
+  }
+
   const selectCls = "w-full bg-slate-50 dark:bg-[#0d1018] border border-slate-200 dark:border-[#1e2436] rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:border-blue-400 transition-all"
   const inputCls  = "w-full bg-slate-50 dark:bg-[#0d1018] border border-slate-200 dark:border-[#1e2436] rounded-lg px-2.5 py-2 text-xs text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none focus:border-blue-400 transition-all"
 
   return (
-    <div className="space-y-8">
+    <div
+      className="space-y-8 relative"
+      onDragEnter={canUpload ? handlePageDragEnter : undefined}
+      onDragLeave={canUpload ? handlePageDragLeave : undefined}
+      onDragOver={canUpload ? handlePageDragOver : undefined}
+      onDrop={canUpload ? handlePageDrop : undefined}
+    >
+      {/* Page-level drop overlay */}
+      {pageDragOver && (
+        <div className="absolute inset-0 z-40 rounded-2xl border-2 border-dashed border-blue-400 bg-blue-50/80 dark:bg-blue-500/10 backdrop-blur-sm flex flex-col items-center justify-center gap-4 pointer-events-none">
+          <div className="w-20 h-20 bg-blue-100 dark:bg-blue-500/20 rounded-3xl flex items-center justify-center">
+            <svg className="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+          </div>
+          <p className="text-xl font-bold text-blue-600 dark:text-blue-400">Déposez votre fichier ici</p>
+          <p className="text-sm text-blue-400">Le formulaire s'ouvrira automatiquement</p>
+        </div>
+      )}
 
       {/* En-tête */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -428,8 +469,9 @@ export default function Documents() {
 
       {showUpload && (
         <UploadModal
-          onClose={() => setShowUpload(false)}
-          onSuccess={() => { setShowUpload(false); fetchDocs(); addToast('Document uploadé avec succès.') }}
+          initialFile={droppedFile}
+          onClose={() => { setShowUpload(false); setDroppedFile(null) }}
+          onSuccess={() => { setShowUpload(false); setDroppedFile(null); fetchDocs(); addToast('Document uploadé avec succès.') }}
         />
       )}
     </div>

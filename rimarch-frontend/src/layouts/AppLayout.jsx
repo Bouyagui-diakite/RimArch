@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../context/ThemeProvider'
+import { NotificationsProvider } from '../context/NotificationsContext'
 import NotificationBell from '../components/NotificationBell'
 
 const navItems = [
@@ -62,6 +63,7 @@ export default function AppLayout({ children }) {
   }
 
   return (
+    <NotificationsProvider>
     <div className="flex h-screen bg-slate-50 dark:bg-[#0a0d14] overflow-hidden">
 
       {/* Overlay mobile */}
@@ -211,6 +213,7 @@ export default function AppLayout({ children }) {
         </main>
       </div>
     </div>
+    </NotificationsProvider>
   )
 }
 

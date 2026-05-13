@@ -11,9 +11,13 @@ const Label = ({ children, required }) => (
 
 const inputClass = "w-full bg-slate-50 dark:bg-[#0d1018] border-2 border-slate-200 dark:border-[#1e2436] rounded-2xl px-5 py-[14px] text-base text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#111520] focus:border-blue-400 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-500/10 transition-all"
 
-export default function UploadModal({ onClose, onSuccess }) {
-  const [form, setForm]         = useState({ title: '', description: '', categorie: 'Général' })
-  const [file, setFile]         = useState(null)
+export default function UploadModal({ onClose, onSuccess, initialFile = null }) {
+  const [form, setForm]         = useState({
+    title: initialFile ? initialFile.name.replace(/\.[^.]+$/, '') : '',
+    description: '',
+    categorie: 'Général',
+  })
+  const [file, setFile]         = useState(initialFile)
   const [dragging, setDragging] = useState(false)
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
