@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getUsers, getRoles, updateUserRole, deleteUser, createUser } from '../../api/admin'
 import { useAuth } from '../../hooks/useAuth'
+import { useToast } from '../../hooks/useToast'
 import ConfirmModal from '../../components/ConfirmModal'
 
 const roleColors = {
@@ -15,6 +16,7 @@ const formatDate = (iso) =>
 
 export default function AdminUsers() {
   const { user: me } = useAuth()
+  const { addToast } = useToast()
   const [users, setUsers]           = useState([])
   const [roles, setRoles]           = useState([])
   const [loading, setLoading]       = useState(true)
@@ -43,6 +45,7 @@ export default function AdminUsers() {
     try {
       const { data } = await updateUserRole(userId, role)
       setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, roles: data.roles } : u))
+      addToast('Rôle mis à jour.')
     } finally { setUpdatingRole(null) }
   }
 
@@ -52,6 +55,7 @@ export default function AdminUsers() {
       await deleteUser(confirmUser.id)
       setUsers((prev) => prev.filter((u) => u.id !== confirmUser.id))
       setConfirmUser(null)
+      addToast('Utilisateur supprimé.', 'error')
     } finally { setDeleting(null) }
   }
 
@@ -64,6 +68,7 @@ export default function AdminUsers() {
       setUsers((prev) => [data, ...prev])
       setShowCreate(false)
       setForm({ name: '', email: '', password: '', role: 'lecteur' })
+      addToast('Utilisateur créé avec succès.')
     } catch (err) {
       const errs = err.response?.data?.errors
       setFormError(errs ? Object.values(errs).flat().join(' ') : 'Erreur lors de la création.')

@@ -5,6 +5,8 @@ import { downloadBlob } from '../utils/download'
 import UploadModal from '../components/UploadModal'
 import ConfirmModal from '../components/ConfirmModal'
 import { useAuth } from '../hooks/useAuth'
+import { useDebounce } from '../hooks/useDebounce'
+import { useToast } from '../hooks/useToast'
 
 const CATEGORIES = ['Tous', 'RH', 'Finance', 'Direction', 'Juridique', 'Technique', 'Général']
 
@@ -28,10 +30,12 @@ const formatDate = (iso) =>
 
 export default function Documents() {
   const { hasRole } = useAuth()
+  const { addToast } = useToast()
   const [docs, setDocs]           = useState([])
   const [meta, setMeta]           = useState({})
   const [loading, setLoading]     = useState(true)
   const [search, setSearch]       = useState('')
+  const debouncedSearch           = useDebounce(search, 300)
   const [categorie, setCategorie] = useState('Tous')
   const [page, setPage]           = useState(1)
   const [showUpload, setShowUpload]     = useState(false)
@@ -65,7 +69,7 @@ export default function Documents() {
   useEffect(() => {
     let cancelled = false
     const params = { page, sort: advanced.sort, dir: advanced.dir }
-    if (search)               params.search    = search
+    if (debouncedSearch)      params.search    = debouncedSearch
     if (categorie !== 'Tous') params.categorie = categorie
     if (advanced.file_type)   params.file_type = advanced.file_type
     if (advanced.date_from)   params.date_from = advanced.date_from
@@ -84,7 +88,7 @@ export default function Documents() {
       .catch(() => { if (!cancelled) setLoading(false) })
 
     return () => { cancelled = true }
-  }, [page, search, categorie, advanced, tick])
+  }, [page, debouncedSearch, categorie, advanced, tick])
 
   const handleDelete = async () => {
     setDeleting(confirmDoc.id)
@@ -92,6 +96,7 @@ export default function Documents() {
       await deleteDocument(confirmDoc.id)
       setConfirmDoc(null)
       fetchDocs()
+      addToast('Document supprimé avec succès.')
     } finally { setDeleting(null) }
   }
 
@@ -424,7 +429,7 @@ export default function Documents() {
       {showUpload && (
         <UploadModal
           onClose={() => setShowUpload(false)}
-          onSuccess={() => { setShowUpload(false); fetchDocs() }}
+          onSuccess={() => { setShowUpload(false); fetchDocs(); addToast('Document uploadé avec succès.') }}
         />
       )}
     </div>

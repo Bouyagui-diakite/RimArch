@@ -4,7 +4,7 @@ import { uploadDocument } from '../api/documents'
 const CATEGORIES = ['RH', 'Finance', 'Direction', 'Juridique', 'Technique', 'Général']
 
 const Label = ({ children, required }) => (
-  <label className="block text-sm font-bold text-slate-700 mb-3">
+  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
     {children} {required && <span className="text-red-500">*</span>}
   </label>
 )
