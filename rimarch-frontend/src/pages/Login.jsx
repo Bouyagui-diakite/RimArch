@@ -83,7 +83,7 @@ export default function Login() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5">
 
               {/* Email */}
               <div className="space-y-2">
@@ -96,6 +96,7 @@ export default function Login() {
                   </IconSlot>
                   <input
                     type="email" required
+                    autoComplete="off"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     placeholder="votre@email.com"
@@ -120,6 +121,7 @@ export default function Login() {
                   </IconSlot>
                   <input
                     type={showPassword ? 'text' : 'password'} required
+                    autoComplete="new-password"
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     placeholder="••••••••"
