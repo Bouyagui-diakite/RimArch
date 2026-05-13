@@ -67,7 +67,7 @@ export default function Profile() {
     )
   }
 
-  const inputCls = "w-full bg-slate-50 dark:bg-[#0d1018] border-2 border-slate-200 dark:border-[#1e2436] rounded-2xl px-5 py-4 text-base text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#111520] focus:border-blue-400 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-500/10 transition-all"
+  const inputCls = "w-full bg-slate-50 dark:bg-[#0d1018] border-2 border-slate-200 dark:border-[#1e2436] rounded-2xl px-5 py-[14px] text-base text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#111520] focus:border-blue-400 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-500/10 transition-all"
 
   return (
     <div className="max-w-xl mx-auto space-y-8">
@@ -100,8 +100,8 @@ export default function Profile() {
         <div className="px-7 py-5 border-b border-slate-100 dark:border-[#1e2436]">
           <h2 className="text-base font-bold text-slate-800 dark:text-white">Informations générales</h2>
         </div>
-        <div className="px-7 py-6">
-          <form onSubmit={handleProfileSave} className="space-y-5">
+        <div className="px-7 py-7">
+          <form onSubmit={handleProfileSave} className="space-y-7">
             <Alert msg={profileMsg} />
             <div>
               <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Nom complet</label>
@@ -110,12 +110,12 @@ export default function Profile() {
             <div>
               <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Adresse email</label>
               <input type="email" value={user?.email} disabled
-                className="w-full bg-slate-100 dark:bg-white/5 border-2 border-slate-200 dark:border-[#1e2436] rounded-2xl px-5 py-4 text-base text-slate-400 cursor-not-allowed" />
-              <p className="text-xs text-slate-400 mt-1">L'email ne peut pas être modifié.</p>
+                className="w-full bg-slate-100 dark:bg-white/5 border-2 border-slate-200 dark:border-[#1e2436] rounded-2xl px-5 py-[14px] text-base text-slate-400 cursor-not-allowed" />
+              <p className="text-xs text-slate-400 mt-1.5">L'email ne peut pas être modifié.</p>
             </div>
-            <div className="flex justify-center pt-2">
+            <div className="flex justify-end pt-1">
               <button type="submit" disabled={profileLoading}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold px-10 py-3.5 rounded-2xl text-sm transition-colors">
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold px-8 py-3.5 rounded-2xl text-sm transition-colors">
                 {profileLoading ? (
                   <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -133,8 +133,8 @@ export default function Profile() {
         <div className="px-7 py-5 border-b border-slate-100 dark:border-[#1e2436]">
           <h2 className="text-base font-bold text-slate-800 dark:text-white">Changer le mot de passe</h2>
         </div>
-        <div className="px-7 py-6">
-          <form onSubmit={handlePasswordSave} className="space-y-6">
+        <div className="px-7 py-7">
+          <form onSubmit={handlePasswordSave} className="space-y-7">
             <Alert msg={pwMsg} />
             {[
               { key: 'current_password', label: 'Mot de passe actuel' },
@@ -148,9 +148,9 @@ export default function Profile() {
                   placeholder="••••••••" className={inputCls} />
               </div>
             ))}
-            <div className="flex justify-center pt-2">
+            <div className="flex justify-end pt-1">
               <button type="submit" disabled={pwLoading}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold px-10 py-3.5 rounded-2xl text-sm transition-colors">
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold px-8 py-3.5 rounded-2xl text-sm transition-colors">
                 {pwLoading ? (
                   <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
