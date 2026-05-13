@@ -137,4 +137,18 @@ class DocumentController extends Controller
 
         return response()->download($fullPath, $document->file_name);
     }
+
+    public function preview(Document $document)
+    {
+        if (!Storage::disk('local')->exists($document->file_path)) {
+            return response()->json(['message' => 'Fichier introuvable.'], 404);
+        }
+
+        $fullPath = Storage::disk('local')->path($document->file_path);
+
+        return response()->file($fullPath, [
+            'Content-Type'        => $document->file_type,
+            'Content-Disposition' => 'inline',
+        ]);
+    }
 }

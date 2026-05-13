@@ -10,5 +10,8 @@ export const deleteDocument = (id)       => api.delete(`/documents/${id}`)
 export const downloadDocument = (id) =>
   api.get(`/documents/${id}/download`, { responseType: 'blob' })
 
+export const previewDocument = (id) =>
+  api.get(`/documents/${id}/preview`, { responseType: 'blob' })
+
 export const exportDocuments = (params) =>
   api.get('/export/documents', { params, responseType: 'blob' })

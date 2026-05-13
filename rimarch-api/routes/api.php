@@ -18,6 +18,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::put('/documents/{document}',       [DocumentController::class, 'update']);
     Route::delete('/documents/{document}',    [DocumentController::class, 'destroy']);
     Route::get('/documents/{document}/download', [DocumentController::class, 'download']);
+    Route::get('/documents/{document}/preview',  [DocumentController::class, 'preview']);
 });
 
 Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getDocument, deleteDocument, downloadDocument, updateDocument } from '../api/documents'
+import { getDocument, deleteDocument, downloadDocument, previewDocument, updateDocument } from '../api/documents'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../hooks/useToast'
 import ConfirmModal from '../components/ConfirmModal'
@@ -82,11 +82,13 @@ export default function DocumentDetail() {
     if (previewUrl) { setPreviewing(true); return }
     setPreviewLoading(true)
     try {
-      const { data } = await downloadDocument(doc.id)
+      const { data } = await previewDocument(doc.id)
       const mime = doc.file_type || 'application/octet-stream'
       const url  = URL.createObjectURL(new Blob([data], { type: mime }))
       setPreviewUrl(url)
       setPreviewing(true)
+    } catch {
+      addToast('Impossible de charger l\'aperçu.', 'error')
     } finally { setPreviewLoading(false) }
   }
 
@@ -160,7 +162,24 @@ export default function DocumentDetail() {
               </button>
             </div>
             {isPdf ? (
-              <iframe src={previewUrl} className="w-full flex-1" style={{ minHeight: '70vh' }} title={doc.title} />
+              <object
+                data={previewUrl}
+                type="application/pdf"
+                className="w-full flex-1"
+                style={{ minHeight: '70vh' }}
+              >
+                <div className="flex flex-col items-center justify-center h-full py-16 gap-4 text-slate-400">
+                  <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <p className="text-sm font-medium">Aperçu non disponible dans ce navigateur.</p>
+                  <button onClick={handleDownload}
+                    className="text-blue-600 dark:text-blue-400 text-sm font-semibold hover:underline">
+                    Télécharger le fichier
+                  </button>
+                </div>
+              </object>
             ) : isImage ? (
               <div className="flex items-center justify-center p-6 overflow-auto flex-1">
                 <img src={previewUrl} alt={doc.title} className="max-w-full max-h-full object-contain rounded-xl" />
