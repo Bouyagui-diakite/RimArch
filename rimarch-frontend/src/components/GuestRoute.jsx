@@ -6,6 +6,8 @@ export default function GuestRoute({ children }) {
 
   if (loading) return null
 
+  if (user && !user.email_verified_at) return <Navigate to="/verify-email" replace />
+
   if (user && user.email_verified_at) {
     const isAdmin = user.roles?.some(r => r.name === 'admin')
     return <Navigate to={isAdmin ? '/admin/utilisateurs' : '/dashboard'} replace />

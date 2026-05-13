@@ -46,6 +46,8 @@ export default function AdminUsers() {
       const { data } = await updateUserRole(userId, role)
       setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, roles: data.roles } : u))
       addToast('Rôle mis à jour.')
+    } catch {
+      addToast('Erreur lors de la mise à jour du rôle.', 'error')
     } finally { setUpdatingRole(null) }
   }
 
@@ -55,7 +57,9 @@ export default function AdminUsers() {
       await deleteUser(confirmUser.id)
       setUsers((prev) => prev.filter((u) => u.id !== confirmUser.id))
       setConfirmUser(null)
-      addToast('Utilisateur supprimé.', 'error')
+      addToast('Utilisateur supprimé.')
+    } catch {
+      addToast('Erreur lors de la suppression.', 'error')
     } finally { setDeleting(null) }
   }
 
