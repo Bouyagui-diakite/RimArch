@@ -70,7 +70,7 @@ export default function AdminUsers() {
     } finally { setFormLoading(false) }
   }
 
-  const inputCls = "w-full bg-slate-50 dark:bg-[#0d1018] border-2 border-slate-200 dark:border-[#1e2436] rounded-2xl px-5 py-4 text-base text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#111520] focus:border-blue-400 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-500/10 transition-all"
+  const inputCls = "w-full bg-slate-50 dark:bg-[#0d1018] border-2 border-slate-200 dark:border-[#1e2436] rounded-2xl px-5 py-[14px] text-base text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#111520] focus:border-blue-400 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-500/10 transition-all"
 
   return (
     <div className="space-y-8">
@@ -192,20 +192,20 @@ export default function AdminUsers() {
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowCreate(false)} />
-          <div className="relative bg-white dark:bg-[#111520] rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-[#1e2436]">
-            <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 dark:border-[#1e2436]">
+          <div className="relative bg-white dark:bg-[#111520] rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-200 dark:border-[#1e2436]">
+            <div className="flex items-center justify-between px-10 py-7 border-b border-slate-100 dark:border-[#1e2436]">
               <div>
-                <h2 className="text-xl font-bold text-slate-800 dark:text-white">Nouvel utilisateur</h2>
-                <p className="text-slate-400 text-sm mt-1">Créez un compte et assignez un rôle</p>
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Nouvel utilisateur</h2>
+                <p className="text-slate-400 text-sm mt-1.5">Créez un compte et assignez un rôle</p>
               </div>
               <button onClick={() => setShowCreate(false)}
-                className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
+                className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <form onSubmit={handleCreate} className="px-10 py-8 space-y-6 max-w-sm mx-auto">
+            <form onSubmit={handleCreate} className="px-10 py-9 space-y-7">
               {formError && (
                 <div className="bg-red-50 dark:bg-red-500/10 border-2 border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400 rounded-2xl px-5 py-4 text-sm font-medium">{formError}</div>
               )}
@@ -226,13 +226,13 @@ export default function AdminUsers() {
                   {roles.map((r) => <option key={r.name} value={r.name}>{r.label}</option>)}
                 </select>
               </div>
-              <div className="flex justify-center gap-4 pt-2">
+              <div className="flex justify-end gap-3 pt-3">
                 <button type="button" onClick={() => setShowCreate(false)}
-                  className="px-8 py-3 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-semibold rounded-2xl text-sm transition-colors">
+                  className="px-7 py-3.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-semibold rounded-2xl text-sm transition-colors">
                   Annuler
                 </button>
                 <button type="submit" disabled={formLoading}
-                  className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold rounded-2xl text-sm transition-colors flex items-center gap-2">
+                  className="px-7 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold rounded-2xl text-sm transition-colors flex items-center gap-2">
                   {formLoading ? (
                     <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
