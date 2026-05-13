@@ -192,8 +192,9 @@ export default function AdminUsers() {
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowCreate(false)} />
-          <div className="relative bg-white dark:bg-[#111520] rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-200 dark:border-[#1e2436]">
-            <div className="flex items-center justify-between px-10 py-7 border-b border-slate-100 dark:border-[#1e2436]">
+          <div className="relative bg-white dark:bg-[#111520] rounded-3xl shadow-2xl w-full max-w-xl border border-slate-200 dark:border-[#1e2436] flex flex-col max-h-[90vh]">
+            {/* Header */}
+            <div className="flex items-center justify-between px-10 py-7 border-b border-slate-100 dark:border-[#1e2436] shrink-0">
               <div>
                 <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Nouvel utilisateur</h2>
                 <p className="text-slate-400 text-sm mt-1.5">Créez un compte et assignez un rôle</p>
@@ -205,7 +206,8 @@ export default function AdminUsers() {
                 </svg>
               </button>
             </div>
-            <form onSubmit={handleCreate} className="px-10 py-9 space-y-7">
+            {/* Scrollable fields */}
+            <form id="create-user-form" onSubmit={handleCreate} className="px-10 py-9 space-y-7 overflow-y-auto flex-1">
               {formError && (
                 <div className="bg-red-50 dark:bg-red-500/10 border-2 border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400 rounded-2xl px-5 py-4 text-sm font-medium">{formError}</div>
               )}
@@ -226,22 +228,23 @@ export default function AdminUsers() {
                   {roles.map((r) => <option key={r.name} value={r.name}>{r.label}</option>)}
                 </select>
               </div>
-              <div className="flex justify-end gap-3 pt-3">
-                <button type="button" onClick={() => setShowCreate(false)}
-                  className="px-7 py-3.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-semibold rounded-2xl text-sm transition-colors">
-                  Annuler
-                </button>
-                <button type="submit" disabled={formLoading}
-                  className="px-7 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold rounded-2xl text-sm transition-colors flex items-center gap-2">
-                  {formLoading ? (
-                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                    </svg>
-                  ) : 'Créer'}
-                </button>
-              </div>
             </form>
+            {/* Sticky footer buttons */}
+            <div className="flex justify-end gap-3 px-10 py-6 border-t border-slate-100 dark:border-[#1e2436] shrink-0 bg-white dark:bg-[#111520] rounded-b-3xl">
+              <button type="button" onClick={() => setShowCreate(false)}
+                className="px-7 py-3.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-semibold rounded-2xl text-sm transition-colors">
+                Annuler
+              </button>
+              <button type="submit" form="create-user-form" disabled={formLoading}
+                className="px-7 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold rounded-2xl text-sm transition-colors flex items-center gap-2">
+                {formLoading ? (
+                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                ) : 'Créer'}
+              </button>
+            </div>
           </div>
         </div>
       )}
