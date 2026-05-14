@@ -28,6 +28,45 @@ function EyeIcon({ open }) {
     : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
 }
 
+function ConfirmPasswordInput({ value, password, showPassword, onChange }) {
+  const isEmpty = !value
+  const matches = value === password
+
+  const borderCls = isEmpty
+    ? 'border-[#1e2436] focus-within:border-blue-500/60 focus-within:ring-blue-500/10'
+    : matches
+      ? 'border-emerald-500/40 focus-within:border-emerald-500/60 focus-within:ring-emerald-500/10'
+      : 'border-red-500/40 focus-within:border-red-500/60 focus-within:ring-red-500/10'
+
+  const icon = isEmpty
+    ? <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+    : matches
+      ? <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+      : <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+
+  return (
+    <div className={`flex items-stretch bg-[#0d1018] border rounded-xl overflow-hidden focus-within:ring-2 transition-all ${borderCls}`}>
+      <div className="px-4 flex items-center shrink-0 border-r border-[#1e2436]">
+        {icon}
+      </div>
+      <input
+        type={showPassword ? 'text' : 'password'}
+        required
+        value={value}
+        onChange={onChange}
+        placeholder="••••••••"
+        className={inputCls}
+      />
+    </div>
+  )
+}
+
+function extractApiError(err) {
+  const data = err.response?.data
+  if (data?.errors) return Object.values(data.errors).flat().join(' ')
+  return data?.message || "Erreur lors de l'inscription."
+}
+
 export default function Register() {
   const { login } = useAuth()
   const navigate = useNavigate()
@@ -37,7 +76,6 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value })
-  const passwordMatch = form.password_confirmation && form.password === form.password_confirmation
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -52,9 +90,7 @@ export default function Register() {
       await login(form.email, form.password)
       navigate('/verify-email')
     } catch (err) {
-      const data = err.response?.data
-      const errs = data?.errors ? Object.values(data.errors).flat().join(' ') : data?.message
-      setError(errs || "Erreur lors de l'inscription.")
+      setError(extractApiError(err))
     } finally {
       setLoading(false)
     }
@@ -67,7 +103,6 @@ export default function Register() {
       <div className="flex-1 flex items-center justify-center bg-[#0a0d14] px-8 py-12">
         <div className="w-full max-w-md">
 
-          {/* Card */}
           <div className="bg-[#111520] border border-[#1e2436] rounded-2xl px-8 py-14 shadow-2xl shadow-black/50">
 
             <div className="mb-10">
@@ -135,24 +170,12 @@ export default function Register() {
               {/* Confirm password */}
               <div className="space-y-2">
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Confirmer le mot de passe</label>
-                <div className={`flex items-stretch bg-[#0d1018] border rounded-xl overflow-hidden focus-within:ring-2 transition-all ${
-                  form.password_confirmation
-                    ? passwordMatch
-                      ? 'border-emerald-500/40 focus-within:border-emerald-500/60 focus-within:ring-emerald-500/10'
-                      : 'border-red-500/40 focus-within:border-red-500/60 focus-within:ring-red-500/10'
-                    : 'border-[#1e2436] focus-within:border-blue-500/60 focus-within:ring-blue-500/10'
-                }`}>
-                  <div className="px-4 flex items-center shrink-0 border-r border-[#1e2436]">
-                    {form.password_confirmation
-                      ? passwordMatch
-                        ? <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                        : <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                      : <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                    }
-                  </div>
-                  <input type={showPassword ? 'text' : 'password'} required value={form.password_confirmation} onChange={set('password_confirmation')}
-                    placeholder="••••••••" className={inputCls} />
-                </div>
+                <ConfirmPasswordInput
+                  value={form.password_confirmation}
+                  password={form.password}
+                  showPassword={showPassword}
+                  onChange={set('password_confirmation')}
+                />
               </div>
 
               {/* Submit */}
