@@ -118,12 +118,63 @@ class DocumentController extends Controller
 
     public function destroy(Document $document)
     {
-        $title = $document->title;
-        AuditLog::log('delete', "Suppression du document \"{$title}\"", $document);
-        Storage::disk('local')->delete($document->file_path);
+        AuditLog::log('delete', "Document \"{$document->title}\" déplacé vers la corbeille", $document);
+        $document->update(['deleted_by' => request()->user()->id]);
         $document->delete();
 
-        return response()->json(['message' => 'Document supprimé avec succès.']);
+        return response()->json(['message' => 'Document déplacé vers la corbeille.']);
+    }
+
+    public function bin()
+    {
+        $user  = request()->user();
+        $query = Document::onlyTrashed()->with(['uploader:id,name', 'deletedBy:id,name']);
+
+        if (!$user->roles()->where('name', 'admin')->exists()) {
+            $query->where('deleted_by', $user->id);
+        }
+
+        return response()->json($query->latest('deleted_at')->get());
+    }
+
+    public function restore($id)
+    {
+        $document = Document::onlyTrashed()->findOrFail($id);
+        AuditLog::log('update', "Document \"{$document->title}\" restauré depuis la corbeille", $document);
+        $document->restore();
+        $document->update(['deleted_by' => null]);
+
+        return response()->json(['message' => 'Document restauré avec succès.']);
+    }
+
+    public function forceDelete($id)
+    {
+        $document = Document::onlyTrashed()->findOrFail($id);
+        AuditLog::log('delete', "Suppression définitive du document \"{$document->title}\"", $document);
+        Storage::disk('local')->delete($document->file_path);
+        $document->forceDelete();
+
+        return response()->json(['message' => 'Document supprimé définitivement.']);
+    }
+
+    public function emptyBin()
+    {
+        $user  = request()->user();
+        $query = Document::onlyTrashed();
+
+        if (!$user->roles()->where('name', 'admin')->exists()) {
+            $query->where('deleted_by', $user->id);
+        }
+
+        $documents = $query->get();
+        foreach ($documents as $doc) {
+            Storage::disk('local')->delete($doc->file_path);
+            $doc->forceDelete();
+        }
+
+        AuditLog::log('delete', "Corbeille vidée ({$documents->count()} document(s) supprimés définitivement)");
+
+        return response()->json(['message' => "{$documents->count()} document(s) supprimés définitivement."]);
     }
 
     public function download(Document $document)

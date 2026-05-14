@@ -10,8 +10,13 @@ export const deleteDocument = (id)       => api.delete(`/documents/${id}`)
 export const downloadDocument = (id) =>
   api.get(`/documents/${id}/download`, { responseType: 'blob' })
 
-export const previewDocument = (id) =>
+export const previewDocument    = (id) =>
   api.get(`/documents/${id}/preview`, { responseType: 'blob' })
+
+export const getBinDocuments    = ()   => api.get('/documents/bin')
+export const restoreDocument    = (id) => api.post(`/documents/${id}/restore`)
+export const forceDeleteDocument = (id) => api.delete(`/documents/${id}/force`)
+export const emptyBin           = ()   => api.delete('/documents/bin/empty')
 
 export const exportDocuments    = (params) =>
   api.get('/export/documents',     { params, responseType: 'blob' })

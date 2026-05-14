@@ -13,13 +13,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/notifications/read-all',                [NotificationController::class, 'markAllRead']);
     Route::get('/export/documents',                       [ExportController::class, 'documents']);
     Route::get('/export/documents/pdf',                   [ExportController::class, 'documentsPdf']);
-    Route::get('/documents',                  [DocumentController::class, 'index']);
-    Route::post('/documents',                 [DocumentController::class, 'store']);
-    Route::get('/documents/{document}',       [DocumentController::class, 'show']);
-    Route::put('/documents/{document}',       [DocumentController::class, 'update']);
-    Route::delete('/documents/{document}',    [DocumentController::class, 'destroy']);
-    Route::get('/documents/{document}/download', [DocumentController::class, 'download']);
-    Route::get('/documents/{document}/preview',  [DocumentController::class, 'preview']);
+    Route::get('/documents',                          [DocumentController::class, 'index']);
+    Route::post('/documents',                         [DocumentController::class, 'store']);
+    Route::get('/documents/bin',                      [DocumentController::class, 'bin']);
+    Route::delete('/documents/bin/empty',             [DocumentController::class, 'emptyBin']);
+    Route::get('/documents/{document}',               [DocumentController::class, 'show']);
+    Route::put('/documents/{document}',               [DocumentController::class, 'update']);
+    Route::delete('/documents/{document}',            [DocumentController::class, 'destroy']);
+    Route::post('/documents/{id}/restore',            [DocumentController::class, 'restore']);
+    Route::delete('/documents/{id}/force',            [DocumentController::class, 'forceDelete']);
+    Route::get('/documents/{document}/download',      [DocumentController::class, 'download']);
+    Route::get('/documents/{document}/preview',       [DocumentController::class, 'preview']);
 });
 
 Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {

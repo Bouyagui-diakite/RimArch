@@ -141,7 +141,7 @@ export default function Documents() {
       await deleteDocument(confirmDoc.id)
       setConfirmDoc(null)
       fetchDocs()
-      addToast('Document supprimé avec succès.')
+      addToast('Document déplacé vers la corbeille.')
     } finally { setDeleting(null) }
   }
 
@@ -195,7 +195,7 @@ export default function Documents() {
       setSelectedIds(new Set())
       setShowBulkConfirm(false)
       fetchDocs()
-      addToast(`${count} document${count > 1 ? 's' : ''} supprimé${count > 1 ? 's' : ''}.`)
+      addToast(`${count} document${count > 1 ? 's' : ''} déplacé${count > 1 ? 's' : ''} vers la corbeille.`)
     } catch {
       addToast('Erreur lors de la suppression groupée.', 'error')
     } finally { setBulkDeleting(false) }

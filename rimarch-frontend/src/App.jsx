@@ -16,6 +16,7 @@ import Dashboard from './pages/Dashboard'
 import Documents from './pages/Documents'
 import DocumentDetail from './pages/DocumentDetail'
 import Profile from './pages/Profile'
+import Bin from './pages/Bin'
 import AdminUsers from './pages/admin/Users'
 import AdminLogs from './pages/admin/Logs'
 
@@ -43,6 +44,7 @@ function AppRoutes() {
                 <Route path="/documents"  element={<Documents />} />
                 <Route path="/documents/:id" element={<DocumentDetail />} />
                 <Route path="/profil"     element={<Profile />} />
+                <Route path="/corbeille" element={<Bin />} />
 
                 {/* Routes admin uniquement */}
                 <Route path="/admin/utilisateurs" element={<AdminRoute><AdminUsers /></AdminRoute>} />
