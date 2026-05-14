@@ -63,6 +63,12 @@ function ConfirmPasswordInput({ value, password, showPassword, onChange }) {
   )
 }
 
+const PASSWORD_REQUIREMENTS = 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial.'
+
+function isStrongPassword(p) {
+  return p.length >= 8 && /[A-Z]/.test(p) && /[0-9]/.test(p) && /[^A-Za-z0-9]/.test(p)
+}
+
 function extractApiError(err) {
   const data = err.response?.data
   if (data?.errors) return Object.values(data.errors).flat().join(' ')
@@ -81,6 +87,10 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (!isStrongPassword(form.password)) {
+      setError(PASSWORD_REQUIREMENTS)
+      return
+    }
     if (form.password !== form.password_confirmation) {
       setError('Les mots de passe ne correspondent pas.')
       return

@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -19,9 +20,9 @@ class AuthController extends Controller
         $data = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'confirmed', PasswordRule::min(8)->mixedCase()->numbers()->symbols()],
             'role'     => 'sometimes|string|exists:roles,name',
-        ]);
+        ], $this->passwordMessages());
 
         $user = User::create([
             'name'     => $data['name'],
@@ -138,8 +139,8 @@ class AuthController extends Controller
         $request->validate([
             'token'    => 'required|string',
             'email'    => 'required|email',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+            'password' => ['required', 'confirmed', PasswordRule::min(8)->mixedCase()->numbers()->symbols()],
+        ], $this->passwordMessages());
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
@@ -177,8 +178,8 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'current_password' => 'required|string',
-            'password'         => 'required|string|min:8|confirmed',
-        ]);
+            'password'         => ['required', 'confirmed', PasswordRule::min(8)->mixedCase()->numbers()->symbols()],
+        ], $this->passwordMessages());
 
         if (!Hash::check($data['current_password'], $request->user()->password)) {
             throw ValidationException::withMessages([
@@ -191,5 +192,15 @@ class AuthController extends Controller
         ]);
 
         return response()->json(['message' => 'Mot de passe mis à jour avec succès.']);
+    }
+
+    private function passwordMessages(): array
+    {
+        return [
+            'password.min'     => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.mixed'   => 'Le mot de passe doit contenir au moins une majuscule et une minuscule.',
+            'password.numbers' => 'Le mot de passe doit contenir au moins un chiffre.',
+            'password.symbols' => 'Le mot de passe doit contenir au moins un caractère spécial.',
+        ];
     }
 }

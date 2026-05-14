@@ -3,6 +3,12 @@ import { useAuth } from '../hooks/useAuth'
 import { updateProfile, updatePassword } from '../api/profile'
 import PasswordStrength from '../components/PasswordStrength'
 
+const PASSWORD_REQUIREMENTS = 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial.'
+
+function isStrongPassword(p) {
+  return p.length >= 8 && /[A-Z]/.test(p) && /[0-9]/.test(p) && /[^A-Za-z0-9]/.test(p)
+}
+
 const roleColors = {
   admin:      'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400',
   archiviste: 'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
@@ -36,6 +42,10 @@ export default function Profile() {
 
   const handlePasswordSave = async (e) => {
     e.preventDefault()
+    if (!isStrongPassword(passwords.password)) {
+      setPwMsg({ type: 'error', text: PASSWORD_REQUIREMENTS })
+      return
+    }
     if (passwords.password !== passwords.password_confirmation) {
       setPwMsg({ type: 'error', text: 'Les mots de passe ne correspondent pas.' })
       return

@@ -8,6 +8,7 @@ use App\Models\AuditLog;
 use App\Models\Document;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -28,8 +29,13 @@ class AdminController extends Controller
         $data = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
+            'password' => ['required', PasswordRule::min(8)->mixedCase()->numbers()->symbols()],
             'role'     => 'required|string|exists:roles,name',
+        ], [
+            'password.min'     => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.mixed'   => 'Le mot de passe doit contenir au moins une majuscule et une minuscule.',
+            'password.numbers' => 'Le mot de passe doit contenir au moins un chiffre.',
+            'password.symbols' => 'Le mot de passe doit contenir au moins un caractère spécial.',
         ]);
 
         $user = User::create([
