@@ -1,9 +1,55 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../context/ThemeProvider'
 import { NotificationsProvider } from '../context/NotificationsContext'
 import NotificationBell from '../components/NotificationBell'
+import { useIdleTimer } from '../hooks/useIdleTimer'
+
+const WARNING_SECONDS = 2 * 60
+
+function IdleWarningModal({ secondsLeft, onStay, onLogout }) {
+  const minutes = Math.floor(secondsLeft / 60)
+  const seconds = secondsLeft % 60
+  const countdown = minutes > 0
+    ? `${minutes}:${String(seconds).padStart(2, '0')}`
+    : `${seconds}s`
+  const urgent = secondsLeft <= 30
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-white dark:bg-[#111520] rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl border border-slate-200 dark:border-[#1e2436]">
+        <div className="text-center">
+          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 ${urgent ? 'bg-red-100 dark:bg-red-500/10' : 'bg-amber-100 dark:bg-amber-500/10'}`}>
+            <svg className={`w-8 h-8 ${urgent ? 'text-red-500' : 'text-amber-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
+            Session inactive
+          </h2>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mb-2">
+            Vous allez être déconnecté automatiquement dans
+          </p>
+          <p className={`text-3xl font-bold mb-6 tabular-nums ${urgent ? 'text-red-500' : 'text-amber-500'}`}>
+            {countdown}
+          </p>
+          <div className="flex gap-3">
+            <button onClick={onLogout}
+              className="flex-1 py-3 rounded-xl border border-slate-200 dark:border-[#1e2436] text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 text-sm font-semibold transition-colors">
+              Se déconnecter
+            </button>
+            <button onClick={onStay}
+              className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-colors">
+              Rester connecté
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const navItems = [
   {
@@ -57,13 +103,56 @@ export default function AppLayout({ children }) {
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  // Idle logout
+  const [showIdleWarning, setShowIdleWarning] = useState(false)
+  const [secondsLeft, setSecondsLeft]         = useState(WARNING_SECONDS)
+  const countdownRef = useRef(null)
+
   const handleLogout = async () => {
     await logout()
     navigate('/login')
   }
 
+  const handleIdleLogout = useCallback(async () => {
+    clearInterval(countdownRef.current)
+    setShowIdleWarning(false)
+    await logout()
+    navigate('/login')
+  }, [logout, navigate])
+
+  const handleWarn = useCallback(() => {
+    setSecondsLeft(WARNING_SECONDS)
+    setShowIdleWarning(true)
+  }, [])
+
+  const resetIdle = useIdleTimer({ onWarn: handleWarn, onLogout: handleIdleLogout })
+
+  const handleStay = useCallback(() => {
+    clearInterval(countdownRef.current)
+    setShowIdleWarning(false)
+    resetIdle()
+  }, [resetIdle])
+
+  useEffect(() => {
+    if (!showIdleWarning) return
+    countdownRef.current = setInterval(() => {
+      setSecondsLeft(s => {
+        if (s <= 1) { clearInterval(countdownRef.current); return 0 }
+        return s - 1
+      })
+    }, 1000)
+    return () => clearInterval(countdownRef.current)
+  }, [showIdleWarning])
+
   return (
     <NotificationsProvider>
+    {showIdleWarning && (
+      <IdleWarningModal
+        secondsLeft={secondsLeft}
+        onStay={handleStay}
+        onLogout={handleIdleLogout}
+      />
+    )}
     <div className="flex h-screen bg-slate-50 dark:bg-[#0a0d14] overflow-hidden">
 
       {/* Overlay mobile */}
