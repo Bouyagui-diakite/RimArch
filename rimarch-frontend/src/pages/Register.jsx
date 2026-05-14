@@ -54,6 +54,7 @@ function ConfirmPasswordInput({ value, password, showPassword, onChange }) {
         required
         value={value}
         onChange={onChange}
+        autoComplete="new-password"
         placeholder="••••••••"
         className={inputCls}
       />
@@ -119,7 +120,7 @@ export default function Register() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5">
 
               {/* Full name */}
               <div className="space-y-2">
@@ -130,7 +131,7 @@ export default function Register() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </IconSlot>
-                  <input type="text" required value={form.name} onChange={set('name')}
+                  <input type="text" required autoComplete="off" value={form.name} onChange={set('name')}
                     placeholder="Jean Dupont" className={inputCls} />
                 </InputWrapper>
               </div>
@@ -144,7 +145,7 @@ export default function Register() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </IconSlot>
-                  <input type="email" required value={form.email} onChange={set('email')}
+                  <input type="email" required autoComplete="off" value={form.email} onChange={set('email')}
                     placeholder="votre@email.com" className={inputCls} />
                 </InputWrapper>
               </div>
@@ -158,7 +159,7 @@ export default function Register() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   </IconSlot>
-                  <input type={showPassword ? 'text' : 'password'} required value={form.password} onChange={set('password')}
+                  <input type={showPassword ? 'text' : 'password'} required autoComplete="new-password" value={form.password} onChange={set('password')}
                     placeholder="••••••••" className={inputCls} />
                   <button type="button" onClick={() => setShowPassword(!showPassword)}
                     className="px-4 flex items-center text-slate-600 hover:text-slate-400 transition-colors shrink-0">
