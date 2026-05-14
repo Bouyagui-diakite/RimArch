@@ -295,6 +295,23 @@ export default function AppLayout({ children }) {
           </div>
         </header>
 
+        {/* Password change required banner */}
+        {user?.must_change_password && (
+          <div className="shrink-0 bg-amber-500 text-white px-6 py-3 flex items-center justify-between gap-4 text-sm font-medium">
+            <div className="flex items-center gap-2.5">
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Votre mot de passe ne répond pas aux nouvelles exigences de sécurité. Veuillez le mettre à jour.
+            </div>
+            <a href="/profil"
+              className="shrink-0 bg-white/20 hover:bg-white/30 text-white font-bold px-4 py-1.5 rounded-lg text-xs transition-colors whitespace-nowrap">
+              Mettre à jour →
+            </a>
+          </div>
+        )}
+
         <main className="flex-1 overflow-y-auto">
           <div className="px-8 py-10 lg:px-14 lg:py-12 max-w-7xl mx-auto">
             {children}

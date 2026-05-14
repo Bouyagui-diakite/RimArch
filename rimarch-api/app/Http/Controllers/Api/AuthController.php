@@ -188,7 +188,8 @@ class AuthController extends Controller
         }
 
         $request->user()->update([
-            'password' => Hash::make($data['password']),
+            'password'             => Hash::make($data['password']),
+            'must_change_password' => false,
         ]);
 
         return response()->json(['message' => 'Mot de passe mis à jour avec succès.']);

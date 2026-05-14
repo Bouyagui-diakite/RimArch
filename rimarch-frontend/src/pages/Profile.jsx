@@ -17,7 +17,7 @@ const roleColors = {
 }
 
 export default function Profile() {
-  const { user } = useAuth()
+  const { user, refreshUser } = useAuth()
 
   const [name, setName]             = useState(user?.name || '')
   const [profileMsg, setProfileMsg] = useState({ type: '', text: '' })
@@ -54,6 +54,7 @@ export default function Profile() {
     setPwMsg({ type: '', text: '' })
     try {
       await updatePassword(passwords)
+      await refreshUser()
       setPwMsg({ type: 'success', text: 'Mot de passe mis à jour avec succès.' })
       setPasswords({ current_password: '', password: '', password_confirmation: '' })
     } catch (err) {

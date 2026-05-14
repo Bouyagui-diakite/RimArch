@@ -39,9 +39,10 @@ class AdminController extends Controller
         ]);
 
         $user = User::create([
-            'name'              => $data['name'],
-            'email'             => $data['email'],
-            'password'          => Hash::make($data['password']),
+            'name'                 => $data['name'],
+            'email'                => $data['email'],
+            'password'             => Hash::make($data['password']),
+            'must_change_password' => true,
             'email_verified_at' => now(),
         ]);
 
