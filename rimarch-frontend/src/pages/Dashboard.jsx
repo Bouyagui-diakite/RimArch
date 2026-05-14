@@ -163,10 +163,10 @@ export default function Dashboard() {
             </div>
           ) : adminStats?.activity?.length ? (
             <div className="divide-y divide-slate-50 dark:divide-[#1e2436]">
-              {adminStats.activity.map((a, i) => {
+              {adminStats.activity.map((a) => {
                 const cfg = ACTION_CONFIG[a.action] || { label: a.action, color: 'bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400', dot: 'bg-slate-400' }
                 return (
-                  <div key={i} className="flex items-center gap-5 px-8 py-5 hover:bg-slate-50/60 dark:hover:bg-white/[0.02] transition-colors">
+                  <div key={a.id} className="flex items-center gap-5 px-8 py-5 hover:bg-slate-50/60 dark:hover:bg-white/[0.02] transition-colors">
                     <div className={`w-3 h-3 rounded-full ${cfg.dot} shrink-0`} />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{a.description}</p>
@@ -245,8 +245,8 @@ export default function Dashboard() {
           </div>
           <div className="px-8 py-8">
             <div className="flex items-end gap-4 h-40">
-              {adminStats.uploads_chart.map((d, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-3">
+              {adminStats.uploads_chart.map((d) => (
+                <div key={d.date} className="flex-1 flex flex-col items-center gap-3">
                   <span className="text-xs font-bold text-slate-500">{d.count > 0 ? d.count : ''}</span>
                   <div className="w-full relative flex items-end" style={{ height: '96px' }}>
                     <div

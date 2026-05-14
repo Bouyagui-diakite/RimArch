@@ -121,6 +121,7 @@ class AdminController extends Controller
             ->limit(8)
             ->get()
             ->map(fn($log) => [
+                'id'          => $log->id,
                 'action'      => $log->action,
                 'description' => $log->description,
                 'user'        => $log->user?->name ?? 'Système',
