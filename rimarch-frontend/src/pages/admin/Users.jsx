@@ -216,18 +216,19 @@ export default function AdminUsers() {
               </button>
             </div>
             {/* Scrollable fields */}
-            <form id="create-user-form" onSubmit={handleCreate} className="px-10 py-9 space-y-7 overflow-y-auto flex-1">
+            <form id="create-user-form" onSubmit={handleCreate} autoComplete="off" className="px-10 py-9 space-y-7 overflow-y-auto flex-1">
               {formError && (
                 <div className="bg-red-50 dark:bg-red-500/10 border-2 border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400 rounded-2xl px-5 py-4 text-sm font-medium">{formError}</div>
               )}
               {[
-                { label: 'Nom complet',   key: 'name',     type: 'text',     placeholder: 'Jean Dupont' },
-                { label: 'Adresse email', key: 'email',    type: 'email',    placeholder: 'jean@rimarch.com' },
-                { label: 'Mot de passe',  key: 'password', type: 'password', placeholder: '••••••••' },
-              ].map(({ label, key, type, placeholder }) => (
+                { label: 'Nom complet',   key: 'name',     type: 'text',     placeholder: 'Jean Dupont',       autoComplete: 'off' },
+                { label: 'Adresse email', key: 'email',    type: 'email',    placeholder: 'jean@rimarch.com',  autoComplete: 'off' },
+                { label: 'Mot de passe',  key: 'password', type: 'password', placeholder: '••••••••',          autoComplete: 'new-password' },
+              ].map(({ label, key, type, placeholder, autoComplete }) => (
                 <div key={key}>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">{label}</label>
-                  <input type={type} required value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                  <input type={type} required autoComplete={autoComplete} value={form[key]}
+                    onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                     placeholder={placeholder} className={inputCls} />
                 </div>
               ))}
