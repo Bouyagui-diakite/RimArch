@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getDocument, deleteDocument, downloadDocument, updateDocument } from '../api/documents'
+import ShareModal from '../components/ShareModal'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../hooks/useToast'
 import ConfirmModal from '../components/ConfirmModal'
@@ -46,8 +47,10 @@ export default function DocumentDetail() {
   const [previewUrl, setPreviewUrl]         = useState(null)
   const [previewing, setPreviewing]         = useState(false)
   const [previewLoading, setPreviewLoading] = useState(false)
+  const [showShare, setShowShare]           = useState(false)
 
-  const canEdit = hasRole('admin') || hasRole('archiviste')
+  const canEdit  = hasRole('admin') || hasRole('archiviste')
+  const canShare = hasRole('admin') || hasRole('archiviste')
 
   useEffect(() => {
     getDocument(id)
@@ -244,6 +247,17 @@ export default function DocumentDetail() {
               </button>
             )}
 
+            {canShare && (
+              <button onClick={() => setShowShare(true)}
+                className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                Partager
+              </button>
+            )}
+
             <button onClick={handleDownload} disabled={downloading}
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
               {downloading ? (
@@ -360,6 +374,10 @@ export default function DocumentDetail() {
           </div>
         ))}
       </div>
+
+      {showShare && doc && (
+        <ShareModal doc={doc} onClose={() => setShowShare(false)} />
+      )}
     </div>
   )
 }

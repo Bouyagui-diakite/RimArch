@@ -17,6 +17,7 @@ import Documents from './pages/Documents'
 import DocumentDetail from './pages/DocumentDetail'
 import Profile from './pages/Profile'
 import Bin from './pages/Bin'
+import SharePage from './pages/SharePage'
 import AdminUsers from './pages/admin/Users'
 import AdminLogs from './pages/admin/Logs'
 
@@ -24,6 +25,7 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Routes publiques — redirige si déjà connecté */}
+      <Route path="/share/:token"      element={<SharePage />} />
       <Route path="/login"            element={<GuestRoute><Login /></GuestRoute>} />
       <Route path="/register"         element={<GuestRoute><Register /></GuestRoute>} />
       <Route path="/forgot-password"  element={<GuestRoute><ForgotPassword /></GuestRoute>} />

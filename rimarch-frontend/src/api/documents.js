@@ -13,7 +13,11 @@ export const downloadDocument = (id) =>
 export const previewDocument    = (id) =>
   api.get(`/documents/${id}/preview`, { responseType: 'blob' })
 
-export const getBinDocuments    = ()   => api.get('/documents/bin')
+export const createShareLink    = (id, data) => api.post(`/documents/${id}/share`, data)
+export const getShareLinks      = (id)       => api.get(`/documents/${id}/shares`)
+export const revokeShareLink    = (token)    => api.delete(`/shares/${token}`)
+export const getSharedDocument  = (token)    => api.get(`/share/${token}`)
+export const getBinDocuments    = ()         => api.get('/documents/bin')
 export const restoreDocument    = (id) => api.post(`/documents/${id}/restore`)
 export const forceDeleteDocument = (id) => api.delete(`/documents/${id}/force`)
 export const emptyBin           = ()   => api.delete('/documents/bin/empty')

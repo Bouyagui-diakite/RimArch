@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\ShareLinkController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
@@ -24,7 +25,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/documents/{id}/force',            [DocumentController::class, 'forceDelete']);
     Route::get('/documents/{document}/download',      [DocumentController::class, 'download']);
     Route::get('/documents/{document}/preview',       [DocumentController::class, 'preview']);
+    Route::post('/documents/{document}/share',        [ShareLinkController::class, 'create']);
+    Route::get('/documents/{document}/shares',        [ShareLinkController::class, 'index']);
+    Route::delete('/shares/{token}',                  [ShareLinkController::class, 'revoke']);
 });
+
+// Public share endpoints — no auth required
+Route::get('/share/{token}',          [ShareLinkController::class, 'show']);
+Route::get('/share/{token}/download', [ShareLinkController::class, 'download']);
 
 Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/stats',                          [AdminController::class, 'getStats']);
