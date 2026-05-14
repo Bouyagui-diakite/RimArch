@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { updateProfile, updatePassword } from '../api/profile'
+import PasswordStrength from '../components/PasswordStrength'
 
 const roleColors = {
   admin:      'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400',
@@ -136,18 +137,25 @@ export default function Profile() {
         <div className="px-7 py-7">
           <form onSubmit={handlePasswordSave} className="space-y-7">
             <Alert msg={pwMsg} />
-            {[
-              { key: 'current_password', label: 'Mot de passe actuel' },
-              { key: 'password',         label: 'Nouveau mot de passe' },
-              { key: 'password_confirmation', label: 'Confirmer le nouveau mot de passe' },
-            ].map(({ key, label }) => (
-              <div key={key}>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">{label}</label>
-                <input type="password" required value={passwords[key]}
-                  onChange={(e) => setPasswords({ ...passwords, [key]: e.target.value })}
-                  placeholder="••••••••" className={inputCls} />
-              </div>
-            ))}
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Mot de passe actuel</label>
+              <input type="password" required value={passwords.current_password}
+                onChange={(e) => setPasswords({ ...passwords, current_password: e.target.value })}
+                placeholder="••••••••" className={inputCls} />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Nouveau mot de passe</label>
+              <input type="password" required value={passwords.password}
+                onChange={(e) => setPasswords({ ...passwords, password: e.target.value })}
+                placeholder="••••••••" className={inputCls} />
+              <PasswordStrength password={passwords.password} />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Confirmer le nouveau mot de passe</label>
+              <input type="password" required value={passwords.password_confirmation}
+                onChange={(e) => setPasswords({ ...passwords, password_confirmation: e.target.value })}
+                placeholder="••••••••" className={inputCls} />
+            </div>
             <div className="flex justify-end pt-1">
               <button type="submit" disabled={pwLoading}
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold px-8 py-3.5 rounded-2xl text-sm transition-colors">

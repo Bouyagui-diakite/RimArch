@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import AuthLeftPanel from '../components/AuthLeftPanel'
+import PasswordStrength from '../components/PasswordStrength'
 import api from '../api/axios'
 
 function InputWrapper({ children }) {
@@ -167,6 +168,8 @@ export default function Register() {
                   </button>
                 </InputWrapper>
               </div>
+
+              <PasswordStrength password={form.password} />
 
               {/* Confirm password */}
               <div className="space-y-2">
