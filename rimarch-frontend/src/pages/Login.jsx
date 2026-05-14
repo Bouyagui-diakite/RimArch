@@ -140,7 +140,7 @@ export default function Login() {
               {/* Submit */}
               <button
                 type="submit" disabled={loading}
-                className="w-full bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:from-blue-700 active:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl py-4 text-base transition-all flex items-center justify-center gap-2 !mt-8 shadow-lg shadow-blue-600/25"
+                className="w-full bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:from-blue-700 active:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl py-4 text-base transition-all flex items-center justify-center gap-2 mt-8 shadow-lg shadow-blue-600/25"
               >
                 {loading ? (
                   <svg className="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
