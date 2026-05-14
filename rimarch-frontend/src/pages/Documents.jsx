@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getDocuments, deleteDocument, downloadDocument, exportDocuments } from '../api/documents'
+import { getDocuments, deleteDocument, downloadDocument, exportDocuments, exportDocumentsPdf } from '../api/documents'
 import { downloadBlob } from '../utils/download'
 import UploadModal from '../components/UploadModal'
 import ConfirmModal from '../components/ConfirmModal'
@@ -53,7 +53,8 @@ export default function Documents() {
   const [deleting,    setDeleting]    = useState(null)
   const [downloading, setDownloading] = useState(null)
   const [downloadError, setDownloadError] = useState('')
-  const [exporting,   setExporting]   = useState(false)
+  const [exporting,      setExporting]      = useState(false)
+  const [exportingPdf,   setExportingPdf]   = useState(false)
   const [droppedFile, setDroppedFile] = useState(null)
   const [pageDragOver, setPageDragOver] = useState(false)
   const dragCounter = useRef(0)
@@ -200,6 +201,22 @@ export default function Documents() {
     } finally { setBulkDeleting(false) }
   }
 
+  const handleExportPdf = async () => {
+    setExportingPdf(true)
+    try {
+      const params = {}
+      if (search)               params.search    = search
+      if (categorie !== 'Tous') params.categorie = categorie
+      if (advanced.file_type)   params.file_type = advanced.file_type
+      if (advanced.date_from)   params.date_from = advanced.date_from
+      if (advanced.date_to)     params.date_to   = advanced.date_to
+      if (advanced.size_min)    params.size_min  = advanced.size_min
+      if (advanced.size_max)    params.size_max  = advanced.size_max
+      const { data } = await exportDocumentsPdf(params)
+      downloadBlob(data, `rimarch_documents_${new Date().toISOString().slice(0,10)}.pdf`)
+    } finally { setExportingPdf(false) }
+  }
+
   const handleExport = async () => {
     setExporting(true)
     try {
@@ -272,6 +289,16 @@ export default function Documents() {
           </p>
         </div>
         <div className="flex items-center gap-3 self-start sm:self-auto">
+          <button onClick={handleExportPdf} disabled={exportingPdf}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold px-4 py-3 rounded-xl transition-colors shadow-sm">
+            {exportingPdf ? <Spinner /> : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            )}
+            Exporter PDF
+          </button>
           <button onClick={handleExport} disabled={exporting}
             className="flex items-center gap-2 bg-white dark:bg-[#111520] hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-60 text-slate-700 dark:text-slate-300 text-sm font-semibold px-4 py-3 rounded-xl transition-colors border border-slate-200 dark:border-[#1e2436] shadow-sm">
             {exporting ? <Spinner /> : (

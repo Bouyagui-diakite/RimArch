@@ -12,6 +12,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/notifications/{notification}/read',     [NotificationController::class, 'markRead']);
     Route::post('/notifications/read-all',                [NotificationController::class, 'markAllRead']);
     Route::get('/export/documents',                       [ExportController::class, 'documents']);
+    Route::get('/export/documents/pdf',                   [ExportController::class, 'documentsPdf']);
     Route::get('/documents',                  [DocumentController::class, 'index']);
     Route::post('/documents',                 [DocumentController::class, 'store']);
     Route::get('/documents/{document}',       [DocumentController::class, 'show']);

@@ -10,6 +10,45 @@ use Illuminate\Http\Request;
 
 class ExportController extends Controller
 {
+    public function documentsPdf(Request $request)
+    {
+        $query = Document::with('uploader:id,name,email');
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%')
+                  ->orWhere('file_name', 'like', '%' . $request->search . '%');
+            });
+        }
+        if ($request->filled('categorie'))   $query->where('categorie', $request->categorie);
+        if ($request->filled('file_type'))   $query->where('file_type', 'like', '%' . $request->file_type . '%');
+        if ($request->filled('date_from'))   $query->whereDate('created_at', '>=', $request->date_from);
+        if ($request->filled('date_to'))     $query->whereDate('created_at', '<=', $request->date_to);
+        if ($request->filled('size_min'))    $query->where('file_size', '>=', (int)$request->size_min * 1024);
+        if ($request->filled('size_max'))    $query->where('file_size', '<=', (int)$request->size_max * 1024);
+
+        $documents = $query->orderBy('created_at', 'desc')->get();
+
+        $typeLabels = ['pdf' => 'PDF', 'word' => 'Word', 'sheet' => 'Excel', 'image' => 'Image', 'plain' => 'Texte'];
+
+        $pdf = Pdf::loadView('exports.documents', [
+            'documents'      => $documents,
+            'hasFilters'     => $request->hasAny(['search', 'categorie', 'file_type', 'date_from', 'date_to', 'size_min', 'size_max']),
+            'filterSearch'   => $request->search,
+            'filterCategorie'=> $request->categorie,
+            'filterType'     => $request->filled('file_type') ? ($typeLabels[$request->file_type] ?? $request->file_type) : null,
+            'filterFrom'     => $request->date_from,
+            'filterTo'       => $request->date_to,
+            'filterSizeMin'  => $request->size_min,
+            'filterSizeMax'  => $request->size_max,
+        ])->setPaper('a4', 'landscape');
+
+        $filename = 'rimarch_documents_' . now()->format('Ymd_His') . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
     public function documents(Request $request)
     {
         $query = Document::with('uploader:id,name,email');

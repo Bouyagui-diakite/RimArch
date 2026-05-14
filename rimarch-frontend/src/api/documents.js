@@ -13,5 +13,8 @@ export const downloadDocument = (id) =>
 export const previewDocument = (id) =>
   api.get(`/documents/${id}/preview`, { responseType: 'blob' })
 
-export const exportDocuments = (params) =>
-  api.get('/export/documents', { params, responseType: 'blob' })
+export const exportDocuments    = (params) =>
+  api.get('/export/documents',     { params, responseType: 'blob' })
+
+export const exportDocumentsPdf = (params) =>
+  api.get('/export/documents/pdf', { params, responseType: 'blob' })
