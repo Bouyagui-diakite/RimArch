@@ -1,59 +1,111 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# RIMArch API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Backend Laravel 11 de la plateforme RIMArch. Fournit une API REST authentifiée via Laravel Sanctum.
 
-## About Laravel
+## Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **PHP** 8.2
+- **Laravel** 11
+- **MySQL** (base de données)
+- **Laravel Sanctum** (authentification par tokens)
+- **DomPDF** (export PDF)
+- **Resend** (envoi d'emails)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
+```
 
-## Learning Laravel
+## Variables d'environnement clés
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```env
+APP_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:3000
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=rimarch
+DB_USERNAME=root
+DB_PASSWORD=
 
-## Laravel Sponsors
+MAIL_MAILER=resend
+RESEND_KEY=your_resend_key
+MAIL_FROM_ADDRESS="noreply@rimarch.app"
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Endpoints principaux
 
-### Premium Partners
+### Auth — `/api/auth`
+| Méthode | Route | Description |
+|---|---|---|
+| POST | `/login` | Connexion |
+| POST | `/register` | Inscription |
+| POST | `/logout` | Déconnexion |
+| GET | `/me` | Utilisateur connecté |
+| PUT | `/profile` | Modifier profil |
+| PUT | `/password` | Changer mot de passe |
+| POST | `/forgot-password` | Demande de reset |
+| POST | `/reset-password` | Reset du mot de passe |
+| GET | `/email/verify/{id}/{hash}` | Vérification email |
+| POST | `/email/resend` | Renvoyer l'email |
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Documents — `/api/documents`
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/` | Liste paginée avec filtres |
+| POST | `/` | Upload d'un document |
+| GET | `/{id}` | Détail d'un document |
+| PUT | `/{id}` | Modifier titre/description/catégorie |
+| DELETE | `/{id}` | Supprimer |
+| GET | `/{id}/download` | Télécharger (attachment) |
+| GET | `/{id}/preview` | Aperçu en ligne (inline) |
 
-## Contributing
+### Notifications — `/api/notifications`
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/` | Liste des notifications |
+| POST | `/{id}/read` | Marquer comme lu |
+| POST | `/read-all` | Tout marquer comme lu |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Exports — `/api/export`
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/documents` | Export CSV des documents |
+| GET | `/documents/pdf` | Export PDF du catalogue |
 
-## Code of Conduct
+### Admin — `/api/admin` (rôle admin requis)
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/stats` | Statistiques tableau de bord |
+| GET | `/users` | Liste des utilisateurs |
+| POST | `/users` | Créer un utilisateur |
+| PUT | `/users/{id}/role` | Changer le rôle |
+| DELETE | `/users/{id}` | Supprimer un utilisateur |
+| GET | `/roles` | Liste des rôles |
+| GET | `/logs` | Journaux d'audit |
+| GET | `/export/logs` | Export CSV des logs |
+| GET | `/export/logs/pdf` | Export PDF des logs |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Rôles
 
-## Security Vulnerabilities
+| Rôle | Slug |
+|---|---|
+| Administrateur | `admin` |
+| Archiviste | `archiviste` |
+| Consultant | `consultant` |
+| Lecteur | `lecteur` |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Déploiement Railway
 
-## License
+Le déploiement est géré par `nixpacks.toml`. Au démarrage :
+1. Migrations automatiques (`php artisan migrate --force`)
+2. Création des dossiers de stockage
+3. Serveur PHP built-in sur `$PORT`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Le Volume Railway doit être monté sur `/app/storage/app` pour la persistance des fichiers.
