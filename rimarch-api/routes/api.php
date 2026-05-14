@@ -25,6 +25,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     Route::get('/stats',                          [AdminController::class, 'getStats']);
     Route::get('/logs',                           [AdminController::class, 'getLogs']);
     Route::get('/export/logs',                    [ExportController::class, 'logs']);
+    Route::get('/export/logs/pdf',                [ExportController::class, 'logsPdf']);
     Route::get('/roles',                          [AdminController::class, 'getRoles']);
     Route::get('/users',                          [AdminController::class, 'getUsers']);
     Route::post('/users',                         [AdminController::class, 'createUser']);

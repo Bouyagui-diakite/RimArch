@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { getLogs, getUsers, exportLogs } from '../../api/admin'
+import { getLogs, getUsers, exportLogs, exportLogsPdf } from '../../api/admin'
 import { downloadBlob } from '../../utils/download'
 
 const ACTION_LABELS = {
@@ -25,7 +25,8 @@ export default function AdminLogs() {
   const [meta, setMeta]         = useState({})
   const [users, setUsers]       = useState([])
   const [loading, setLoading]   = useState(true)
-  const [exporting, setExporting] = useState(false)
+  const [exporting,    setExporting]    = useState(false)
+  const [exportingPdf, setExportingPdf] = useState(false)
   const [page, setPage]         = useState(1)
   const [filters, setFilters]   = useState({ action: '', user_id: '', from: '', to: '' })
 
@@ -51,6 +52,19 @@ export default function AdminLogs() {
 
   const setFilter = (key, val) => setFilters(f => ({ ...f, [key]: val }))
   const resetFilters = () => setFilters({ action: '', user_id: '', from: '', to: '' })
+
+  const handleExportPdf = async () => {
+    setExportingPdf(true)
+    try {
+      const params = {}
+      if (filters.action)  params.action  = filters.action
+      if (filters.user_id) params.user_id = filters.user_id
+      if (filters.from)    params.from    = filters.from
+      if (filters.to)      params.to      = filters.to
+      const { data } = await exportLogsPdf(params)
+      downloadBlob(data, `rimarch_logs_${new Date().toISOString().slice(0,10)}.pdf`)
+    } finally { setExportingPdf(false) }
+  }
 
   const handleExport = async () => {
     setExporting(true)
@@ -90,6 +104,21 @@ export default function AdminLogs() {
               Réinitialiser
             </button>
           )}
+          <button onClick={handleExportPdf} disabled={exportingPdf}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm">
+            {exportingPdf ? (
+              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            )}
+            Exporter PDF
+          </button>
           <button onClick={handleExport} disabled={exporting}
             className="flex items-center gap-2 bg-white dark:bg-[#111520] hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-60 text-slate-700 dark:text-slate-300 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors border border-slate-200 dark:border-[#1e2436] shadow-sm">
             {exporting ? (
