@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
+use App\Models\Document;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -193,6 +194,48 @@ class AuthController extends Controller
         ]);
 
         return response()->json(['message' => 'Mot de passe mis à jour avec succès.']);
+    }
+
+    public function userStats(Request $request)
+    {
+        $userId = $request->user()->id;
+        $docs   = Document::where('uploaded_by', $userId);
+
+        $totalBytes = $docs->clone()->sum('file_size');
+
+        $recentUploads = $docs->clone()
+            ->latest()
+            ->limit(5)
+            ->get(['id', 'title', 'file_type', 'file_size', 'categorie', 'created_at']);
+
+        $recentActivity = AuditLog::where('user_id', $userId)
+            ->latest()
+            ->limit(6)
+            ->get()
+            ->map(fn($log) => [
+                'id'          => $log->id,
+                'action'      => $log->action,
+                'description' => $log->description,
+                'created_at'  => $log->created_at,
+            ]);
+
+        return response()->json([
+            'documents_count'      => $docs->clone()->count(),
+            'documents_this_month' => $docs->clone()
+                ->whereMonth('created_at', now()->month)
+                ->whereYear('created_at',  now()->year)
+                ->count(),
+            'storage_used'         => $this->formatBytes($totalBytes),
+            'recent_uploads'       => $recentUploads,
+            'recent_activity'      => $recentActivity,
+        ]);
+    }
+
+    private function formatBytes(int $bytes): string
+    {
+        if ($bytes < 1024)        return $bytes . ' o';
+        if ($bytes < 1024 * 1024) return round($bytes / 1024, 1) . ' Ko';
+        return round($bytes / (1024 * 1024), 1) . ' Mo';
     }
 
     private function passwordMessages(): array
