@@ -330,7 +330,7 @@ export default function Documents() {
 
       {/* Bulk action bar */}
       {selectedIds.size > 0 && (
-        <div className="flex items-center justify-between gap-4 bg-blue-600 text-white px-6 py-3.5 rounded-2xl shadow-lg shadow-blue-600/20">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-blue-600 text-white px-5 py-3.5 rounded-2xl shadow-lg shadow-blue-600/20">
           <div className="flex items-center gap-3">
             <span className="text-sm font-bold">
               {selectedIds.size} document{selectedIds.size > 1 ? 's' : ''} sélectionné{selectedIds.size > 1 ? 's' : ''}
@@ -400,7 +400,7 @@ export default function Documents() {
           </button>
 
           {showAdvanced && (
-            <div className="absolute left-0 top-full mt-2 z-30 bg-white dark:bg-[#111520] border border-slate-200 dark:border-[#1e2436] rounded-2xl shadow-xl p-5 w-72">
+            <div className="absolute right-0 top-full mt-2 z-30 bg-white dark:bg-[#111520] border border-slate-200 dark:border-[#1e2436] rounded-2xl shadow-xl p-5 w-72 max-w-[calc(100vw-2rem)]">
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 mb-1.5">Type</label>
@@ -495,8 +495,8 @@ export default function Documents() {
           </div>
         ) : (
           <>
-            {/* Table header */}
-            <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-slate-50 dark:bg-[#0d1018] border-b border-slate-100 dark:border-[#1e2436] text-xs font-bold text-slate-400 uppercase tracking-widest items-center">
+            {/* Table header — desktop only */}
+            <div className="hidden lg:grid grid-cols-12 gap-4 px-6 py-4 bg-slate-50 dark:bg-[#0d1018] border-b border-slate-100 dark:border-[#1e2436] text-xs font-bold text-slate-400 uppercase tracking-widest items-center">
               <div className="col-span-1 flex items-center">
                 <input
                   ref={selectAllRef}
@@ -521,75 +521,101 @@ export default function Documents() {
                 return (
                   <div
                     key={doc.id}
-                    className={`grid grid-cols-12 gap-4 px-6 py-5 items-center transition-colors group ${
-                      isSelected
-                        ? 'bg-blue-50/60 dark:bg-blue-500/5'
-                        : 'hover:bg-slate-50 dark:hover:bg-white/[0.02]'
-                    }`}
+                    className={`transition-colors ${isSelected ? 'bg-blue-50/60 dark:bg-blue-500/5' : 'hover:bg-slate-50 dark:hover:bg-white/[0.02]'}`}
                   >
-                    {/* Checkbox */}
-                    <div className="col-span-1 flex items-center">
+                    {/* ── Mobile card ── */}
+                    <div className="lg:hidden flex items-start gap-3 px-4 py-4">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleSelect(doc.id)}
-                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 cursor-pointer accent-blue-600"
+                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 cursor-pointer accent-blue-600 mt-1 shrink-0"
                       />
-                    </div>
-
-                    {/* Document */}
-                    <div className="col-span-4 flex items-center gap-3 min-w-0 cursor-pointer" onClick={() => navigate(`/documents/${doc.id}`)}>
-                      <div className={`w-9 h-9 rounded-xl ${icon.bg} flex items-center justify-center shrink-0`}>
+                      <div className={`w-10 h-10 rounded-xl ${icon.bg} flex items-center justify-center shrink-0`}>
                         <span className={`text-xs font-bold ${icon.text}`}>{icon.label}</span>
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{doc.title}</p>
+                      <div className="flex-1 min-w-0" onClick={() => navigate(`/documents/${doc.id}`)}>
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-snug">{doc.title}</p>
+                          <div className="flex items-center gap-1 shrink-0" onClick={e => e.stopPropagation()}>
+                            <button onClick={() => handleDownload(doc)} disabled={downloading === doc.id}
+                              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all disabled:opacity-40">
+                              {downloading === doc.id ? <Spinner /> : (
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                              )}
+                            </button>
+                            {canDelete && (
+                              <button onClick={() => setConfirmDoc(doc)} disabled={deleting === doc.id}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all disabled:opacity-40">
+                                {deleting === doc.id ? <Spinner /> : (
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </div>
                         <p className="text-xs text-slate-400 truncate mt-0.5">{doc.file_name}</p>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
+                          <span className="bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 text-xs font-medium px-2 py-0.5 rounded-full">{doc.categorie}</span>
+                          <span className="text-xs text-slate-400">{doc.uploader?.name}</span>
+                          <span className="text-xs text-slate-400">{formatSize(doc.file_size)}</span>
+                          <span className="text-xs text-slate-400">{formatDate(doc.created_at)}</span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Catégorie */}
-                    <div className="col-span-2">
-                      <span className="bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 text-xs font-medium px-2.5 py-1 rounded-full">
-                        {doc.categorie}
-                      </span>
-                    </div>
-
-                    {/* Uploader */}
-                    <div className="col-span-2 flex items-center gap-2 min-w-0">
-                      <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                        {doc.uploader?.name?.charAt(0)}
+                    {/* ── Desktop grid ── */}
+                    <div className="hidden lg:grid grid-cols-12 gap-4 px-6 py-5 items-center group">
+                      <div className="col-span-1 flex items-center">
+                        <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(doc.id)}
+                          className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 cursor-pointer accent-blue-600" />
                       </div>
-                      <span className="text-sm text-slate-600 dark:text-slate-400 truncate">{doc.uploader?.name}</span>
-                    </div>
-
-                    {/* Size */}
-                    <div className="col-span-1 text-sm text-slate-500">{formatSize(doc.file_size)}</div>
-
-                    {/* Date */}
-                    <div className="col-span-1 text-sm text-slate-500">{formatDate(doc.created_at)}</div>
-
-                    {/* Actions */}
-                    <div className="col-span-1 flex items-center justify-end gap-1">
-                      <button onClick={() => handleDownload(doc)} disabled={downloading === doc.id} title="Télécharger"
-                        className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all disabled:opacity-40">
-                        {downloading === doc.id ? <Spinner /> : (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                          </svg>
-                        )}
-                      </button>
-                      {canDelete && (
-                        <button onClick={() => setConfirmDoc(doc)} disabled={deleting === doc.id} title="Supprimer"
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all disabled:opacity-40">
-                          {deleting === doc.id ? <Spinner /> : (
+                      <div className="col-span-4 flex items-center gap-3 min-w-0 cursor-pointer" onClick={() => navigate(`/documents/${doc.id}`)}>
+                        <div className={`w-9 h-9 rounded-xl ${icon.bg} flex items-center justify-center shrink-0`}>
+                          <span className={`text-xs font-bold ${icon.text}`}>{icon.label}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{doc.title}</p>
+                          <p className="text-xs text-slate-400 truncate mt-0.5">{doc.file_name}</p>
+                        </div>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 text-xs font-medium px-2.5 py-1 rounded-full">{doc.categorie}</span>
+                      </div>
+                      <div className="col-span-2 flex items-center gap-2 min-w-0">
+                        <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                          {doc.uploader?.name?.charAt(0)}
+                        </div>
+                        <span className="text-sm text-slate-600 dark:text-slate-400 truncate">{doc.uploader?.name}</span>
+                      </div>
+                      <div className="col-span-1 text-sm text-slate-500">{formatSize(doc.file_size)}</div>
+                      <div className="col-span-1 text-sm text-slate-500">{formatDate(doc.created_at)}</div>
+                      <div className="col-span-1 flex items-center justify-end gap-1">
+                        <button onClick={() => handleDownload(doc)} disabled={downloading === doc.id} title="Télécharger"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all disabled:opacity-40">
+                          {downloading === doc.id ? <Spinner /> : (
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
                           )}
                         </button>
-                      )}
+                        {canDelete && (
+                          <button onClick={() => setConfirmDoc(doc)} disabled={deleting === doc.id} title="Supprimer"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all disabled:opacity-40">
+                            {deleting === doc.id ? <Spinner /> : (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            )}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )
