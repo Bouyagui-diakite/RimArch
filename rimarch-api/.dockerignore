@@ -1,0 +1,10 @@
+# Fichiers à NE PAS copier dans l'image (comme .gitignore, mais pour Docker).
+# On exclut vendor pour forcer un "composer install" propre dans le conteneur.
+vendor
+node_modules
+.env
+.git
+.gitignore
+Dockerfile
+.dockerignore
+storage/logs/*.log
