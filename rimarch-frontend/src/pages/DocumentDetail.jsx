@@ -5,26 +5,27 @@ import ShareModal from '../components/ShareModal'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../hooks/useToast'
 import ConfirmModal from '../components/ConfirmModal'
+import {
+  panelCls, Spinner, Button, Field, EmptyState, Tag,
+  fileLabel, formatSize, formatDateTime, inputCls,
+} from '../components/ui'
 
 const CATEGORIES = ['RH', 'Finance', 'Direction', 'Juridique', 'Technique', 'Général']
 
-const formatSize = (b) => {
-  if (!b) return '—'
-  if (b < 1024) return `${b} o`
-  if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} Ko`
-  return `${(b / (1024 * 1024)).toFixed(1)} Mo`
+const formatLongDate = (iso) =>
+  iso ? new Date(iso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '—'
+
+const ICON = {
+  eye:      <><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></>,
+  share:    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />,
+  download: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />,
+  edit:     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />,
+  trash:    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />,
 }
 
-const formatDate = (iso) =>
-  new Date(iso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-
-const fileIcon = (type) => {
-  if (type?.includes('pdf'))   return { bg: 'bg-red-100 dark:bg-red-500/10',       text: 'text-red-600 dark:text-red-400',       label: 'PDF',  previewable: true  }
-  if (type?.includes('word') || type?.includes('doc')) return { bg: 'bg-blue-100 dark:bg-blue-500/10', text: 'text-blue-600 dark:text-blue-400', label: 'DOC', previewable: false }
-  if (type?.includes('sheet') || type?.includes('xls')) return { bg: 'bg-emerald-100 dark:bg-emerald-500/10', text: 'text-emerald-600 dark:text-emerald-400', label: 'XLS', previewable: false }
-  if (type?.includes('image')) return { bg: 'bg-purple-100 dark:bg-purple-500/10', text: 'text-purple-600 dark:text-purple-400', label: 'IMG',  previewable: true  }
-  return { bg: 'bg-slate-100 dark:bg-slate-500/10', text: 'text-slate-600 dark:text-slate-400', label: 'FILE', previewable: false }
-}
+const Icon = ({ path, className = 'h-4 w-4' }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">{path}</svg>
+)
 
 export default function DocumentDetail() {
   const { id } = useParams()
@@ -36,13 +37,13 @@ export default function DocumentDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState('')
 
-  const [downloading, setDownloading]       = useState(false)
-  const [deleting, setDeleting]             = useState(false)
-  const [confirmDelete, setConfirmDelete]   = useState(false)
+  const [downloading, setDownloading]     = useState(false)
+  const [deleting, setDeleting]           = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
-  const [editing, setEditing]               = useState(false)
-  const [editForm, setEditForm]             = useState({ title: '', description: '', categorie: '' })
-  const [editLoading, setEditLoading]       = useState(false)
+  const [editing, setEditing]         = useState(false)
+  const [editForm, setEditForm]       = useState({ title: '', description: '', categorie: '' })
+  const [editLoading, setEditLoading] = useState(false)
 
   const [previewUrl, setPreviewUrl]         = useState(null)
   const [previewing, setPreviewing]         = useState(false)
@@ -117,75 +118,75 @@ export default function DocumentDetail() {
     } finally { setEditLoading(false) }
   }
 
-  const inputCls = "w-full bg-slate-50 dark:bg-[#0d1018] border-2 border-slate-200 dark:border-[#1e2436] rounded-2xl px-5 py-[14px] text-base text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#111520] focus:border-blue-400 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-500/10 transition-all"
-
   if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <svg className="animate-spin w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-      </svg>
+    <div className="flex h-64 items-center justify-center text-faint">
+      <Spinner className="h-7 w-7" />
     </div>
   )
 
   if (error) return (
-    <div className="flex flex-col items-center justify-center h-64 gap-4">
-      <div className="w-14 h-14 bg-red-100 dark:bg-red-500/10 rounded-2xl flex items-center justify-center">
-        <svg className="w-7 h-7 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+    <div className={`${panelCls} overflow-hidden`}>
+      <EmptyState
+        title="Document introuvable"
+        icon={
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        }
+      >
+        Ce document a peut-être été supprimé ou déplacé vers la corbeille.
+      </EmptyState>
+      <div className="flex justify-center border-t border-line px-6 py-4">
+        <Button onClick={() => navigate('/documents')}>← Retour aux documents</Button>
       </div>
-      <p className="text-slate-600 dark:text-slate-400 font-medium">{error}</p>
-      <button onClick={() => navigate('/documents')} className="text-blue-600 dark:text-blue-400 text-sm hover:underline">
-        ← Retour aux documents
-      </button>
     </div>
   )
 
-  const icon = fileIcon(doc.file_type)
   const isImage = doc.file_type?.includes('image')
   const isPdf   = doc.file_type?.includes('pdf')
+  const previewable = isImage || isPdf
+
+  const meta = [
+    { label: 'Type de fichier',      value: doc.file_type || '—' },
+    { label: 'Taille',               value: formatSize(doc.file_size) },
+    { label: 'Catégorie',            value: doc.categorie },
+    { label: 'Déposé par',           value: doc.uploader?.name || '—' },
+    { label: "Date d'ajout",         value: formatLongDate(doc.created_at) },
+    { label: 'Dernière mise à jour', value: formatDateTime(doc.updated_at) },
+  ]
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="max-w-4xl space-y-6">
 
-      {/* Preview modal */}
+      {/* ── Aperçu ── */}
       {previewing && previewUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
-          onClick={() => setPreviewing(false)}>
-          <div className="relative w-full max-w-4xl bg-white dark:bg-[#111520] rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
-            onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-[#1e2436] shrink-0">
-              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">{doc.file_name}</p>
-              <button onClick={() => setPreviewing(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 transition-all shrink-0">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0d16]/80 p-4 backdrop-blur-sm" onClick={() => setPreviewing(false)}>
+          <div
+            className="relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-[18px] border border-line bg-surface shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-line px-6 py-4">
+              <p className="truncate text-[13px] font-medium text-ink">{doc.file_name}</p>
+              <button
+                onClick={() => setPreviewing(false)}
+                aria-label="Fermer l’aperçu"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-faint transition-colors hover:bg-raised hover:text-ink"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             {isPdf ? (
-              <object
-                data={previewUrl}
-                type="application/pdf"
-                className="w-full flex-1"
-                style={{ minHeight: '70vh' }}
-              >
-                <div className="flex flex-col items-center justify-center h-full py-16 gap-4 text-slate-400">
-                  <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  <p className="text-sm font-medium">Aperçu non disponible dans ce navigateur.</p>
-                  <button onClick={handleDownload}
-                    className="text-blue-600 dark:text-blue-400 text-sm font-semibold hover:underline">
-                    Télécharger le fichier
-                  </button>
+              <object data={previewUrl} type="application/pdf" className="w-full flex-1" style={{ minHeight: '70vh' }}>
+                <div className="flex h-full flex-col items-center justify-center gap-4 py-16 text-muted">
+                  <p className="text-[13px]">Aperçu non disponible dans ce navigateur.</p>
+                  <Button onClick={handleDownload}>Télécharger le fichier</Button>
                 </div>
               </object>
             ) : isImage ? (
-              <div className="flex items-center justify-center p-6 overflow-auto flex-1">
-                <img src={previewUrl} alt={doc.title} className="max-w-full max-h-full object-contain rounded-xl" />
+              <div className="flex flex-1 items-center justify-center overflow-auto bg-raised p-6">
+                <img src={previewUrl} alt={doc.title} className="max-h-full max-w-full rounded-lg object-contain" />
               </div>
             ) : null}
           </div>
@@ -195,7 +196,7 @@ export default function DocumentDetail() {
       {confirmDelete && (
         <ConfirmModal
           title="Supprimer le document"
-          message={`Êtes-vous sûr de vouloir supprimer "${doc?.title}" ? Cette action est irréversible.`}
+          message={`Êtes-vous sûr de vouloir supprimer « ${doc?.title} » ? Le document partira à la corbeille.`}
           confirmLabel="Supprimer"
           loading={deleting}
           onConfirm={handleDelete}
@@ -203,177 +204,132 @@ export default function DocumentDetail() {
         />
       )}
 
-      {/* Back */}
-      <button onClick={() => navigate('/documents')}
-        className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-sm font-medium transition-colors">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
+      {/* ── Retour ── */}
+      <button
+        onClick={() => navigate('/documents')}
+        className="group flex items-center gap-2 text-[12.5px] font-medium text-muted transition-colors hover:text-ink"
+      >
+        <span className="transition-transform group-hover:-translate-x-0.5">←</span>
         Retour aux documents
       </button>
 
-      {/* Header card */}
-      <div className="bg-white dark:bg-[#111520] rounded-2xl border border-slate-200 dark:border-[#1e2436] p-8 shadow-sm">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div className="flex items-start gap-4">
-            <div className={`w-14 h-14 rounded-2xl ${icon.bg} flex items-center justify-center shrink-0`}>
-              <span className={`text-lg font-bold ${icon.text}`}>{icon.label}</span>
+      {/* ── Carte principale ── */}
+      <div className={`${panelCls} overflow-hidden`}>
+        <div className="relative overflow-hidden border-b border-white/10 bg-[#0b0d16] px-7 py-7 grain">
+          <div className="pointer-events-none absolute -right-12 -top-16 h-48 w-48 rounded-full bg-cobalt/25 blur-3xl" />
+          <div className="relative flex items-start gap-4">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-white/[0.06] text-[12px] font-semibold tracking-wide text-white">
+              {fileLabel(doc.file_type)}
+            </span>
+            <div className="min-w-0">
+              <p className="eyebrow text-cobalt-glow">{doc.categorie}</p>
+              <h1 className="font-display mt-2 text-[25px] leading-tight text-white">{doc.title}</h1>
+              <p className="mt-1.5 truncate text-[12.5px] text-white/45">
+                {doc.file_name} · {formatSize(doc.file_size)}
+              </p>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-800 dark:text-white">{doc.title}</h1>
-              <p className="text-slate-400 text-sm mt-1">{doc.file_name}</p>
-              <span className="inline-block mt-2 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 text-xs font-medium px-2.5 py-1 rounded-full">
-                {doc.categorie}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap">
-            {icon.previewable && (
-              <button onClick={handlePreview} disabled={previewLoading}
-                className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 disabled:opacity-60 text-slate-700 dark:text-slate-300 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
-                {previewLoading ? (
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
-                Aperçu
-              </button>
-            )}
-
-            {canShare && (
-              <button onClick={() => setShowShare(true)}
-                className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                </svg>
-                Partager
-              </button>
-            )}
-
-            <button onClick={handleDownload} disabled={downloading}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
-              {downloading ? (
-                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-              )}
-              Télécharger
-            </button>
-
-            {canEdit && (
-              <>
-                <button onClick={() => setEditing(!editing)}
-                  className={`flex items-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors border ${
-                    editing
-                      ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/30 text-blue-700 dark:text-blue-400'
-                      : 'bg-slate-100 dark:bg-white/5 border-transparent hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400'
-                  }`}>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Modifier
-                </button>
-                <button onClick={() => setConfirmDelete(true)} disabled={deleting}
-                  className="flex items-center gap-2 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 disabled:opacity-60 text-red-600 dark:text-red-400 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors border border-red-200 dark:border-red-500/20">
-                  {deleting ? (
-                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                    </svg>
-                  ) : (
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  )}
-                  Supprimer
-                </button>
-              </>
-            )}
           </div>
         </div>
 
+        {/* Actions */}
+        <div className="flex flex-wrap items-center gap-2.5 border-b border-line px-7 py-4">
+          <Button variant="primary" onClick={handleDownload} loading={downloading} icon={<Icon path={ICON.download} />}>
+            Télécharger
+          </Button>
+          {previewable && (
+            <Button onClick={handlePreview} loading={previewLoading} icon={<Icon path={ICON.eye} />}>
+              Aperçu
+            </Button>
+          )}
+          {canShare && (
+            <Button onClick={() => setShowShare(true)} icon={<Icon path={ICON.share} />}>
+              Partager
+            </Button>
+          )}
+          {canEdit && (
+            <>
+              <Button
+                onClick={() => setEditing(!editing)}
+                icon={<Icon path={ICON.edit} />}
+                className={editing ? 'border-cobalt/40 text-accent' : ''}
+              >
+                Modifier
+              </Button>
+              <Button variant="danger" onClick={() => setConfirmDelete(true)} loading={deleting} icon={<Icon path={ICON.trash} />}>
+                Supprimer
+              </Button>
+            </>
+          )}
+        </div>
+
         {!editing && doc.description && (
-          <div className="mt-5 pt-5 border-t border-slate-100 dark:border-[#1e2436]">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Description</p>
-            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{doc.description}</p>
+          <div className="px-7 py-6">
+            <p className="eyebrow text-faint">Description</p>
+            <p className="mt-2.5 max-w-2xl text-[14px] leading-relaxed text-muted">{doc.description}</p>
           </div>
         )}
       </div>
 
-      {/* Edit form */}
+      {/* ── Édition ── */}
       {editing && (
-        <div className="bg-white dark:bg-[#111520] rounded-2xl border border-blue-200 dark:border-blue-500/30 p-8 shadow-sm">
-          <h2 className="text-base font-bold text-slate-800 dark:text-white mb-6">Modifier le document</h2>
-          <form onSubmit={handleEdit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Titre</label>
+        <div className={`${panelCls} overflow-hidden`}>
+          <div className="border-b border-line px-7 py-4">
+            <h2 className="font-display text-[16px] leading-none text-ink">Modifier le document</h2>
+            <p className="mt-1.5 text-[12px] text-faint">Les modifications sont journalisées.</p>
+          </div>
+          <form onSubmit={handleEdit} className="space-y-5 px-7 py-6">
+            <Field label="Titre">
               <input type="text" required value={editForm.title}
-                onChange={e => setEditForm({ ...editForm, title: e.target.value })}
-                className={inputCls} />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Catégorie</label>
+                onChange={e => setEditForm({ ...editForm, title: e.target.value })} className={inputCls} />
+            </Field>
+            <Field label="Catégorie">
               <select value={editForm.categorie}
-                onChange={e => setEditForm({ ...editForm, categorie: e.target.value })}
-                className={inputCls}>
+                onChange={e => setEditForm({ ...editForm, categorie: e.target.value })} className={inputCls}>
                 {CATEGORIES.map(c => <option key={c}>{c}</option>)}
               </select>
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Description</label>
+            </Field>
+            <Field label="Description">
               <textarea rows={3} value={editForm.description}
                 onChange={e => setEditForm({ ...editForm, description: e.target.value })}
                 placeholder="Description optionnelle…"
                 className={`${inputCls} resize-none`} />
-            </div>
-            <div className="flex justify-end gap-3">
-              <button type="button" onClick={() => setEditing(false)}
-                className="px-6 py-3 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-semibold rounded-xl text-sm transition-colors">
-                Annuler
-              </button>
-              <button type="submit" disabled={editLoading}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold rounded-xl text-sm transition-colors flex items-center gap-2">
-                {editLoading ? (
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                ) : 'Enregistrer'}
-              </button>
+            </Field>
+            <div className="flex justify-end gap-2.5 border-t border-line pt-5">
+              <Button type="button" onClick={() => setEditing(false)}>Annuler</Button>
+              <Button type="submit" variant="primary" loading={editLoading}>Enregistrer</Button>
             </div>
           </form>
         </div>
       )}
 
-      {/* Metadata */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
-        {[
-          { label: 'Type de fichier',      value: doc.file_type || '—' },
-          { label: 'Taille',               value: formatSize(doc.file_size) },
-          { label: 'Catégorie',            value: doc.categorie },
-          { label: 'Uploadé par',          value: doc.uploader?.name || '—' },
-          { label: "Date d'ajout",         value: formatDate(doc.created_at) },
-          { label: 'Dernière mise à jour', value: formatDate(doc.updated_at) },
-        ].map((m) => (
-          <div key={m.label} className="bg-white dark:bg-[#111520] rounded-2xl border border-slate-200 dark:border-[#1e2436] px-6 py-5 shadow-sm">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{m.label}</p>
-            <p className="text-sm font-medium text-slate-800 dark:text-white truncate">{m.value}</p>
-          </div>
-        ))}
+      {/* ── Métadonnées ── */}
+      <div className={`${panelCls} overflow-hidden`}>
+        <div className="border-b border-line px-7 py-4">
+          <h2 className="font-display text-[16px] leading-none text-ink">Fiche technique</h2>
+        </div>
+        <dl className="grid grid-cols-1 sm:grid-cols-2">
+          {meta.map((m, i) => {
+            const lastMobile  = i === meta.length - 1
+            const lastRowDesk = i >= meta.length - 2
+            return (
+              <div
+                key={m.label}
+                className={`border-line px-7 py-4 ${lastMobile ? '' : 'border-b'} ${lastRowDesk ? 'sm:border-b-0' : 'sm:border-b'} ${i % 2 === 0 ? 'sm:border-r' : ''}`}
+              >
+                <dt className="eyebrow text-faint">{m.label}</dt>
+                <dd className="mt-1.5 truncate text-[13.5px] font-medium text-ink">{m.value}</dd>
+              </div>
+            )
+          })}
+        </dl>
       </div>
+
+      {doc.uploader?.name && (
+        <div className="flex items-center gap-2 px-1 text-[12px] text-faint">
+          <Tag>Traçabilité</Tag>
+          Toute consultation ou modification de ce document est enregistrée dans les journaux.
+        </div>
+      )}
 
       {showShare && doc && (
         <ShareModal doc={doc} onClose={() => setShowShare(false)} />

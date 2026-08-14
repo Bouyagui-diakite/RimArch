@@ -2,24 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import AuthLeftPanel from '../components/AuthLeftPanel'
-
-function InputWrapper({ children }) {
-  return (
-    <div className="flex items-stretch bg-[#0d1018] border border-[#1e2436] rounded-xl overflow-hidden focus-within:border-blue-500/60 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
-      {children}
-    </div>
-  )
-}
-
-function IconSlot({ children }) {
-  return (
-    <div className="px-4 flex items-center shrink-0 border-r border-[#1e2436] text-slate-500">
-      {children}
-    </div>
-  )
-}
-
-const inputCls = "flex-1 min-w-0 bg-transparent py-5 px-4 text-base text-white placeholder-slate-600 focus:outline-none"
+import AuthShell from '../components/AuthShell'
 
 export default function Login() {
   const { login } = useAuth()
@@ -49,137 +32,110 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex">
-      <AuthLeftPanel mode="login" />
+    <AuthShell panel={<AuthLeftPanel mode="login" />}>
 
-      <div className="flex-1 flex items-center justify-center bg-[#0a0d14] px-8 py-12">
-        <div className="w-full max-w-md">
+      {/* ── En-tête ── */}
+      <div className="rise">
+        <p className="eyebrow text-[#9c9ca8]">Espace sécurisé</p>
+        <h1 className="font-display mt-2.5 text-[34px] leading-[1.05] text-[#14151c] sm:text-[40px]">
+          Connexion
+        </h1>
+        <p className="mt-3 text-[13.5px] text-[#6b6c7a]">
+          Entrez vos identifiants pour accéder à vos archives.
+        </p>
+      </div>
 
-          {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-2.5 mb-10">
-            <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                  d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-              </svg>
-            </div>
-            <span className="font-bold text-white text-lg tracking-wide">RIMArch</span>
-          </div>
+      {/* ── Erreur ── */}
+      {error && (
+        <div className="rise mt-7 flex items-start gap-3 rounded-lg border border-[#e4b4b4] bg-[#fdf3f2] px-4 py-3 text-[13px] text-[#a33a35]">
+          <svg className="mt-px h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {error}
+        </div>
+      )}
 
-          {/* Card */}
-          <div className="bg-[#111520] border border-[#1e2436] rounded-2xl px-8 py-14 shadow-2xl shadow-black/50">
+      {/* ── Formulaire ── */}
+      <form onSubmit={handleSubmit} autoComplete="off" className="mt-8 space-y-5">
 
-            <div className="mb-10">
-              <h2 className="text-3xl font-bold text-white tracking-tight">Connexion</h2>
-              <p className="text-slate-500 text-sm mt-2">Accédez à votre espace RIMArch</p>
-            </div>
+        <div className="rise delay-1">
+          <label htmlFor="email" className="eyebrow mb-2 block text-[#6b6c7a]">Adresse email</label>
+          <input
+            id="email" type="email" required autoComplete="off"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            placeholder="vous@exemple.com"
+            className="field"
+          />
+        </div>
 
-            {error && (
-              <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3.5 mb-6 text-sm">
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5">
-
-              {/* Email */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Email</label>
-                <InputWrapper>
-                  <IconSlot>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </IconSlot>
-                  <input
-                    type="email" required
-                    autoComplete="off"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    placeholder="votre@email.com"
-                    className={inputCls}
-                  />
-                </InputWrapper>
-              </div>
-
-              {/* Password */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Mot de passe</label>
-                  <Link to="/forgot-password" className="text-xs text-blue-500 hover:text-blue-400 transition-colors font-medium">
-                    Oublié ?
-                  </Link>
-                </div>
-                <InputWrapper>
-                  <IconSlot>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  </IconSlot>
-                  <input
-                    type={showPassword ? 'text' : 'password'} required
-                    autoComplete="new-password"
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    placeholder="••••••••"
-                    className={inputCls}
-                  />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)}
-                    className="px-4 flex items-center text-slate-600 hover:text-slate-400 transition-colors shrink-0">
-                    {showPassword
-                      ? <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-                      : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                    }
-                  </button>
-                </InputWrapper>
-              </div>
-
-              {/* Submit */}
-              <button
-                type="submit" disabled={loading}
-                className="w-full bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:from-blue-700 active:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl py-4 text-base transition-all flex items-center justify-center gap-2 mt-8 shadow-lg shadow-blue-600/25"
-              >
-                {loading ? (
-                  <svg className="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                ) : (
-                  <>
-                    Se connecter
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#1e2436]" />
-              </div>
-              <div className="relative flex justify-center">
-                <span className="px-3 text-xs text-slate-600 bg-[#111520]">Pas encore de compte ?</span>
-              </div>
-            </div>
-
+        <div className="rise delay-2">
+          <div className="mb-2 flex items-baseline justify-between">
+            <label htmlFor="password" className="eyebrow text-[#6b6c7a]">Mot de passe</label>
             <Link
-              to="/register"
-              className="flex items-center justify-center gap-2 w-full py-4 rounded-xl border border-[#1e2436] text-sm font-semibold text-slate-400 hover:text-white hover:border-slate-600 transition-all"
+              to="/forgot-password"
+              className="text-[12px] font-medium text-cobalt underline decoration-cobalt/30 underline-offset-4 transition hover:decoration-cobalt"
             >
-              Créer un compte gratuitement
+              Mot de passe oublié ?
             </Link>
           </div>
-
-          <p className="text-center text-xs text-slate-700 mt-8">
-            RIMArch © {new Date().getFullYear()}
-          </p>
+          <div className="relative">
+            <input
+              id="password" type={showPassword ? 'text' : 'password'} required autoComplete="new-password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              placeholder="••••••••"
+              className="field pr-12"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2 text-[#a2a1a9] transition hover:bg-[#f2f0ea] hover:text-[#14151c]"
+            >
+              {showPassword
+                ? <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M3 3l18 18" /></svg>
+                : <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              }
+            </button>
+          </div>
         </div>
+
+        <button
+          type="submit" disabled={loading}
+          className="rise delay-3 group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-lg bg-[#14151c] py-[15px] text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition-all hover:bg-cobalt disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loading ? (
+            <>
+              <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z" />
+              </svg>
+              Connexion…
+            </>
+          ) : (
+            <>
+              Se connecter
+              <svg className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12h15m0 0l-6-6m6 6l-6 6" />
+              </svg>
+            </>
+          )}
+        </button>
+      </form>
+
+      {/* ── Pied ── */}
+      <div className="rise delay-4 mt-10 border-t border-[#e4e0d7] pt-6">
+        <p className="text-[13px] text-[#6b6c7a]">
+          Pas encore de compte ?{' '}
+          <Link
+            to="/register"
+            className="font-semibold text-cobalt underline decoration-cobalt/30 underline-offset-4 transition hover:decoration-cobalt"
+          >
+            S&apos;inscrire
+          </Link>
+        </p>
       </div>
-    </div>
+    </AuthShell>
   )
 }

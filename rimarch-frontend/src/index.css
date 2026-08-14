@@ -1,20 +1,173 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* ─────────────────────────────────────────────
+   RIMArch — Design tokens
+   Papier / encre / cobalt. Éditorial, pas SaaS.
+   ───────────────────────────────────────────── */
+
+:root {
+  /* Palette de base (mode clair) */
+  --rim-canvas:  #f3f1ec;   /* fond papier chaud */
+  --rim-surface: #ffffff;   /* cartes */
+  --rim-raised:  #faf9f6;   /* zones secondaires */
+  --rim-ink:     #14151c;   /* texte principal */
+  --rim-muted:   #6b6c7a;   /* texte secondaire */
+  --rim-faint:   #9c9ca8;   /* texte tertiaire */
+  --rim-line:    #e4e0d7;   /* bordures */
+  --rim-accent:  #1f3bff;   /* cobalt */
+  --rim-accent-soft: rgba(31, 59, 255, 0.08);
 }
 
-body {
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  background-color: #f8fafc;
-  color: #1e293b;
-  -webkit-font-smoothing: antialiased;
+.dark {
+  --rim-canvas:  #08090e;
+  --rim-surface: #101119;
+  --rim-raised:  #161824;
+  --rim-ink:     #f2f0ea;
+  --rim-muted:   #9698a6;
+  --rim-faint:   #63657a;
+  --rim-line:    #22242f;
+  --rim-accent:  #7f8dff;
+  --rim-accent-soft: rgba(127, 141, 255, 0.12);
 }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+@theme {
+  /* Une seule famille dans toute l'application : Inter.
+     `font-display` n'est pas une autre police, c'est le même Inter réglé
+     pour les titres (graisse + interlettrage resserré). */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-sans);
+
+  --color-canvas:  var(--rim-canvas);
+  --color-surface: var(--rim-surface);
+  --color-raised:  var(--rim-raised);
+  --color-ink:     var(--rim-ink);
+  --color-muted:   var(--rim-muted);
+  --color-faint:   var(--rim-faint);
+  --color-line:    var(--rim-line);
+  --color-accent:  var(--rim-accent);
+
+  /* Cobalt fixe — identique dans les deux thèmes (fonds pleins) */
+  --color-cobalt:      #1f3bff;
+  --color-cobalt-deep: #142ac4;
+  --color-cobalt-lift: #4560ff;
+  --color-cobalt-glow: #93a4ff;   /* lisible sur fond encre */
+
+  /* Accents data */
+  --color-clay:  #c2683a;
+  --color-moss:  #2f7d63;
+  --color-plum:  #7a4f9e;
+}
+
+/* Préflight de Tailwind fait déjà le reset : ne rien déclarer hors @layer,
+   sinon les utilitaires (mt-*, px-*, …) perdent la bataille de la cascade. */
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--rim-canvas);
+    color: var(--rim-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: var(--color-cobalt);
+    color: #fff;
+  }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--rim-faint) 45%, transparent);
+    border-radius: 99px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--rim-muted) 60%, transparent);
+    background-clip: padding-box;
+  }
+}
+
+@layer components {
+
+/* Style « titre » : même police, graisse et interlettrage resserrés.
+   C'est ce contraste (et non un changement de famille) qui hiérarchise. */
+.font-display {
+  font-weight: 600;
+  letter-spacing: -0.028em;
+}
+
+/* ── Micro-label typographique (éditorial) ── */
+.eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* ── Grain / texture papier ── */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+/* ── Trame technique (fond des pages auth) ── */
+.blueprint {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+/* ── Animations d'entrée ── */
+@keyframes rim-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes rim-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.rise      { animation: rim-rise 0.62s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.fade      { animation: rim-fade 0.9s ease both; }
+.delay-1   { animation-delay: 0.06s; }
+.delay-2   { animation-delay: 0.12s; }
+.delay-3   { animation-delay: 0.18s; }
+.delay-4   { animation-delay: 0.24s; }
+.delay-5   { animation-delay: 0.30s; }
+.delay-6   { animation-delay: 0.36s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise, .fade { animation: none; }
+}
+
+/* ── Champs de formulaire (thème clair des cartes auth) ── */
+.field {
+  width: 100%;
+  background: #fbfaf8;
+  border: 1px solid #dcd8cf;
+  border-radius: 10px;
+  padding: 13px 15px;
+  font-size: 14px;
+  color: #14151c;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+.field::placeholder { color: #b3b2ab; }
+.field:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--color-cobalt);
+  box-shadow: 0 0 0 3px rgba(31, 59, 255, 0.12);
+}
+.field:disabled { opacity: 0.6; }
+
+}

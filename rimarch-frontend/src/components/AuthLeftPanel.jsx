@@ -1,81 +1,125 @@
-const features = [
-  { icon: '🗂️', title: 'Archivage structuré',   desc: 'Classez par fonds, séries et catégories' },
-  { icon: '🔍', title: 'Recherche instantanée',  desc: 'Retrouvez n\'importe quel document en secondes' },
-  { icon: '🔐', title: 'Accès sécurisé',         desc: 'Droits granulaires par rôle utilisateur' },
+/* Panneau visuel des pages d'authentification.
+   Composition éditoriale : encre profonde, trame d'archives, grain. */
+
+const COPY = {
+  login: {
+    kicker: 'Plateforme d’archives',
+    title: 'Bienvenue',
+    text: 'Vos fonds, séries et dossiers réunis dans un seul espace. Classés, sécurisés, retrouvables en quelques secondes.',
+  },
+  register: {
+    kicker: 'Créer un compte',
+    title: 'Rejoignez-nous',
+    text: 'Ouvrez votre espace RIMArch et commencez à structurer vos archives dès la première minute.',
+  },
+}
+
+const STATS = [
+  { value: '256-bit', label: 'Chiffrement' },
+  { value: '4 rôles', label: 'Habilitations' },
+  { value: '24/7', label: 'Disponibilité' },
 ]
 
+/* Pile de dossiers en perspective — dessinée, pas photographiée. */
+function ArchiveStack() {
+  return (
+    <svg
+      viewBox="0 0 320 300"
+      fill="none"
+      className="w-full max-w-[280px] drop-shadow-2xl"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="sheet" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.14" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0.03" />
+        </linearGradient>
+        <linearGradient id="edge" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#4560ff" />
+          <stop offset="100%" stopColor="#1f3bff" />
+        </linearGradient>
+      </defs>
+
+      {/* Feuilles empilées */}
+      {[0, 1, 2].map((i) => {
+        const y = i * 46
+        return (
+          <g key={i} opacity={1 - i * 0.22}>
+            <path
+              d={`M160 ${28 + y} L296 ${86 + y} L160 ${144 + y} L24 ${86 + y} Z`}
+              fill="url(#sheet)"
+              stroke="rgba(255,255,255,0.24)"
+              strokeWidth="1"
+            />
+            {i === 2 && (
+              <path
+                d={`M160 ${144 + y} L296 ${86 + y} L296 ${98 + y} L160 ${156 + y} L24 ${98 + y} L24 ${86 + y} Z`}
+                fill="url(#edge)"
+                opacity="0.9"
+              />
+            )}
+          </g>
+        )
+      })}
+
+      {/* Lignes de reliure */}
+      <g stroke="rgba(255,255,255,0.28)" strokeWidth="1" strokeDasharray="3 5">
+        <path d="M24 86 L24 178" />
+        <path d="M296 86 L296 178" />
+        <path d="M160 28 L160 120" />
+      </g>
+    </svg>
+  )
+}
+
 export default function AuthLeftPanel({ mode = 'login' }) {
-  const isRegister = mode === 'register'
+  const copy = COPY[mode] ?? COPY.login
 
   return (
-    <div className="hidden lg:flex lg:w-[45%] bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex-col justify-between p-12 relative overflow-hidden">
+    <div className="relative hidden lg:flex lg:w-[46%] shrink-0 flex-col justify-between overflow-hidden bg-[#0b0d16] grain">
 
-      {/* Cercles décoratifs */}
-      <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-blue-600 opacity-[0.07] rounded-full pointer-events-none" />
-      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-500 opacity-[0.07] rounded-full pointer-events-none" />
+      {/* Halos */}
+      <div className="pointer-events-none absolute -left-24 -top-24 h-[420px] w-[420px] rounded-full bg-cobalt/25 blur-[110px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-20 h-[380px] w-[380px] rounded-full bg-cobalt-lift/15 blur-[120px]" />
 
-      {/* ── Logo ── */}
-      <div className="relative z-10 flex items-center gap-3">
-        <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30 shrink-0">
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-              d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-          </svg>
+      {/* Trame */}
+      <div className="blueprint pointer-events-none absolute inset-0 opacity-40" />
+
+      {/* Filet vertical typographique */}
+      <div className="pointer-events-none absolute inset-y-0 left-14 w-px bg-white/[0.07]" />
+
+      {/* ── Haut : marque ── */}
+      <div className="relative z-10 flex items-center gap-3 px-11 pt-10">
+        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white">
+          <span className="text-[15px] font-semibold leading-none text-[#0b0d16]">R</span>
         </div>
-        <span className="text-white font-bold text-base tracking-wide">RIMArch</span>
+        <span className="text-[13px] font-semibold tracking-[0.22em] text-white uppercase">RIMArch</span>
       </div>
 
-      {/* ── Contenu central ── */}
-      <div className="relative z-10 flex flex-col items-center text-center">
+      {/* ── Centre : illustration ── */}
+      <div className="relative z-10 flex flex-1 items-center justify-center px-11 py-5">
+        <ArchiveStack />
+      </div>
 
-        {/* Icône principale */}
-        <div className="w-16 h-16 bg-white/10 border border-white/15 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-sm">
-          {isRegister ? (
-            <svg className="w-8 h-8 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
-          ) : (
-            <svg className="w-8 h-8 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-            </svg>
-          )}
-        </div>
-
-        {/* Titre */}
-        <h1 className="text-3xl font-bold text-white tracking-tight leading-snug mb-3">
-          {isRegister ? 'Rejoignez RIMArch' : 'Bienvenue sur RIMArch'}
-        </h1>
-
-        {/* Sous-titre */}
-        <p className="text-slate-400 text-sm leading-relaxed max-w-xs mb-10">
-          {isRegister
-            ? 'Créez votre compte et accédez à la plateforme de gestion d\'archives.'
-            : 'Organisez, retrouvez et partagez vos documents d\'archives en toute sécurité.'}
+      {/* ── Bas : accroche ── */}
+      <div className="relative z-10 px-11 pb-10">
+        <p className="eyebrow text-cobalt-glow">{copy.kicker}</p>
+        <h2 className="font-display mt-3 text-[34px] leading-[1.06] text-white">
+          {copy.title}<span className="text-cobalt-glow">.</span>
+        </h2>
+        <p className="mt-4 max-w-sm text-[13.5px] leading-relaxed text-white/55">
+          {copy.text}
         </p>
 
-        {/* Features */}
-        <div className="w-full space-y-3">
-          {features.map((f) => (
-            <div
-              key={f.title}
-              className="flex items-center gap-4 bg-white/5 border border-white/8 rounded-xl px-4 py-3.5 text-left"
-            >
-              <span className="text-lg shrink-0 w-7 text-center">{f.icon}</span>
-              <div>
-                <p className="text-white text-sm font-semibold leading-none">{f.title}</p>
-                <p className="text-slate-500 text-xs mt-1">{f.desc}</p>
-              </div>
+        <div className="mt-8 grid grid-cols-3 divide-x divide-white/10 overflow-hidden rounded-lg border border-white/10">
+          {STATS.map((s) => (
+            <div key={s.label} className="px-3 py-3.5">
+              <p className="text-[13px] font-semibold text-white">{s.value}</p>
+              <p className="mt-0.5 text-[11px] text-white/40">{s.label}</p>
             </div>
           ))}
         </div>
       </div>
-
-      {/* ── Footer ── */}
-      <p className="relative z-10 text-slate-600 text-xs text-center">
-        © {new Date().getFullYear()} RIMArch — Tous droits réservés
-      </p>
     </div>
   )
 }

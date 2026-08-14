@@ -21,10 +21,11 @@ const icons = {
   ),
 }
 
-const colors = {
-  success: 'bg-emerald-600',
-  error:   'bg-red-600',
-  info:    'bg-blue-600',
+/* Fond encre commun, la couleur ne sert qu'au filet et à l'icône. */
+const accents = {
+  success: 'text-[#7fd1b0] border-l-moss',
+  error:   'text-[#e8938d] border-l-[#c25048]',
+  info:    'text-cobalt-glow border-l-cobalt',
 }
 
 export function ToastProvider({ children }) {
@@ -41,14 +42,14 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={{ addToast }}>
       {children}
-      <div className="fixed bottom-6 right-6 z-[200] flex flex-col gap-2.5 pointer-events-none">
+      <div className="pointer-events-none fixed bottom-6 right-6 z-[200] flex flex-col gap-2.5">
         {toasts.map(t => (
           <div key={t.id}
-            className={`flex items-center gap-3 px-4 py-3.5 rounded-xl shadow-xl text-sm font-medium text-white min-w-[280px] max-w-sm pointer-events-auto ${colors[t.type] || colors.info}`}>
+            className={`rise pointer-events-auto flex min-w-[280px] max-w-sm items-center gap-3 rounded-lg border-l-2 bg-[#0b0d16] px-4 py-3.5 text-[13px] font-medium text-white shadow-2xl ${accents[t.type] || accents.info}`}>
             {icons[t.type] || icons.info}
-            <span className="flex-1">{t.message}</span>
-            <button onClick={() => remove(t.id)} className="text-white/60 hover:text-white transition-colors ml-1 shrink-0">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span className="flex-1 text-white/90">{t.message}</span>
+            <button onClick={() => remove(t.id)} aria-label="Fermer" className="ml-1 shrink-0 text-white/40 transition-colors hover:text-white">
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>

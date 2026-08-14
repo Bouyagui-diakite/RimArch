@@ -10,8 +10,11 @@ export function NotificationsProvider({ children }) {
   const [error, setError]                 = useState(null)
   const visibleRef = useRef(!document.hidden)
 
-  const loadNotifications = useCallback(async () => {
-    if (!visibleRef.current) return
+  /* `force` : le garde-fou de visibilité ne doit filtrer que le polling.
+     Sans lui, une app ouverte dans un onglet en arrière-plan sautait son
+     premier chargement et restait bloquée sur le spinner. */
+  const loadNotifications = useCallback(async ({ force = false } = {}) => {
+    if (!force && !visibleRef.current) return
     try {
       const { data } = await getNotifications()
       setNotifications(data.notifications)
@@ -25,8 +28,8 @@ export function NotificationsProvider({ children }) {
   }, [])
 
   useEffect(() => {
-    loadNotifications()
-    const interval = setInterval(loadNotifications, 30000)
+    loadNotifications({ force: true })
+    const interval = setInterval(() => loadNotifications(), 30000)
 
     const onVisibility = () => {
       visibleRef.current = !document.hidden
@@ -82,7 +85,7 @@ export function NotificationsProvider({ children }) {
   return (
     <NotificationsContext.Provider value={{
       notifications, unread, loading, error,
-      refetch: loadNotifications,
+      refetch: () => loadNotifications({ force: true }),
       markRead: handleMarkRead,
       markAllRead: handleMarkAllRead,
       deleteNotification: handleDelete,

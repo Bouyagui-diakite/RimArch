@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { updateProfile, updatePassword } from '../api/profile'
 import PasswordStrength from '../components/PasswordStrength'
+import { panelCls, PageHeader, SectionHead, Button, Field, inputCls, formatDateTime } from '../components/ui'
 
 const PASSWORD_REQUIREMENTS = 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial.'
 
@@ -9,11 +10,22 @@ function isStrongPassword(p) {
   return p.length >= 8 && /[A-Z]/.test(p) && /[0-9]/.test(p) && /[^A-Za-z0-9]/.test(p)
 }
 
-const roleColors = {
-  admin:      'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400',
-  archiviste: 'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
-  consultant: 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
-  lecteur:    'bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400',
+function Alert({ msg }) {
+  if (!msg.text) return null
+  const ok = msg.type === 'success'
+  return (
+    <div className={`flex items-start gap-2.5 rounded-lg border px-4 py-3 text-[13px] ${
+      ok ? 'border-moss/30 bg-moss/[0.07] text-moss' : 'border-[#c25048]/30 bg-[#c25048]/[0.07] text-[#c25048]'
+    }`}>
+      <svg className="mt-px h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {ok
+          ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        }
+      </svg>
+      {msg.text}
+    </div>
+  )
 }
 
 export default function Profile() {
@@ -42,14 +54,8 @@ export default function Profile() {
 
   const handlePasswordSave = async (e) => {
     e.preventDefault()
-    if (!isStrongPassword(passwords.password)) {
-      setPwMsg({ type: 'error', text: PASSWORD_REQUIREMENTS })
-      return
-    }
-    if (passwords.password !== passwords.password_confirmation) {
-      setPwMsg({ type: 'error', text: 'Les mots de passe ne correspondent pas.' })
-      return
-    }
+    if (!isStrongPassword(passwords.password)) { setPwMsg({ type: 'error', text: PASSWORD_REQUIREMENTS }); return }
+    if (passwords.password !== passwords.password_confirmation) { setPwMsg({ type: 'error', text: 'Les mots de passe ne correspondent pas.' }); return }
     setPwLoading(true)
     setPwMsg({ type: '', text: '' })
     try {
@@ -63,123 +69,102 @@ export default function Profile() {
     } finally { setPwLoading(false) }
   }
 
-  const Alert = ({ msg }) => {
-    if (!msg.text) return null
-    const isSuccess = msg.type === 'success'
-    return (
-      <div className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm ${isSuccess ? 'bg-emerald-50 border border-emerald-200 text-emerald-700 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:text-emerald-400' : 'bg-red-50 border border-red-100 text-red-600 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400'}`}>
-        <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-          {isSuccess
-            ? <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            : <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-          }
-        </svg>
-        {msg.text}
-      </div>
-    )
-  }
-
-  const inputCls = "w-full bg-slate-50 dark:bg-[#0d1018] border-2 border-slate-200 dark:border-[#1e2436] rounded-2xl px-5 py-[14px] text-base text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#111520] focus:border-blue-400 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-500/10 transition-all"
-
   return (
-    <div className="max-w-xl mx-auto space-y-8">
+    <div className="mx-auto max-w-2xl space-y-6">
 
-      <div>
-        <h1 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">Mon profil</h1>
-        <p className="text-slate-400 text-sm mt-2">Gérez vos informations personnelles</p>
-      </div>
+      <PageHeader eyebrow="Compte" title="Mon profil" sub="Vos informations personnelles et vos accès" />
 
-      {/* Carte identité */}
-      <div className="bg-white dark:bg-[#111520] rounded-2xl border border-slate-200 dark:border-[#1e2436] p-7 flex items-center gap-6 shadow-sm">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shrink-0 shadow-md shadow-blue-200 dark:shadow-blue-500/10">
-          {user?.name?.charAt(0).toUpperCase()}
-        </div>
-        <div>
-          <p className="text-lg font-bold text-slate-800 dark:text-white">{user?.name}</p>
-          <p className="text-slate-400 text-sm">{user?.email}</p>
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {user?.roles?.map((r) => (
-              <span key={r.name} className={`text-xs font-medium px-2.5 py-1 rounded-full ${roleColors[r.name] || 'bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400'}`}>
-                {r.label}
-              </span>
-            ))}
+      {/* ── Carte d'identité ── */}
+      <div className={`${panelCls} overflow-hidden`}>
+        <div className="relative overflow-hidden bg-[#0b0d16] px-7 py-7 grain">
+          <div className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full bg-cobalt/25 blur-3xl" />
+          <div className="relative flex flex-wrap items-center gap-5">
+            <div className="relative shrink-0">
+              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white/[0.08] ring-1 ring-white/15">
+                <span className="font-display text-[19px] leading-none text-white">
+                  {user?.name?.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <span className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-[#0b0d16] bg-moss" />
+            </div>
+            <div className="min-w-0">
+              <p className="font-display text-[22px] leading-none text-white">{user?.name}</p>
+              <p className="mt-2 truncate text-[12.5px] text-white/45">{user?.email}</p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {user?.roles?.map((r) => (
+                  <span key={r.name} className="rounded-full border border-white/20 px-2.5 py-1 text-[10.5px] font-medium uppercase tracking-[0.1em] text-white/70">
+                    {r.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="ml-auto hidden shrink-0 text-right sm:block">
+              <p className="font-display text-[25px] leading-none text-white tabular-nums">{user?.documents_count ?? 0}</p>
+              <p className="eyebrow mt-2 text-white/40">Documents déposés</p>
+            </div>
           </div>
         </div>
+
+        {user?.last_login && (
+          <div className="flex items-center justify-between gap-4 px-7 py-3.5">
+            <span className="text-[12.5px] text-muted">Dernière connexion</span>
+            <span className="text-[12.5px] font-medium text-ink">{formatDateTime(user.last_login)}</span>
+          </div>
+        )}
       </div>
 
-      {/* Modifier nom */}
-      <div className="bg-white dark:bg-[#111520] rounded-2xl border border-slate-200 dark:border-[#1e2436] shadow-sm overflow-hidden">
-        <div className="px-7 py-5 border-b border-slate-100 dark:border-[#1e2436]">
-          <h2 className="text-base font-bold text-slate-800 dark:text-white">Informations générales</h2>
-        </div>
-        <div className="px-7 py-7">
-          <form onSubmit={handleProfileSave} className="space-y-7">
-            <Alert msg={profileMsg} />
-            <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Nom complet</label>
-              <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Adresse email</label>
-              <input type="email" value={user?.email} disabled
-                className="w-full bg-slate-100 dark:bg-white/5 border-2 border-slate-200 dark:border-[#1e2436] rounded-2xl px-5 py-[14px] text-base text-slate-400 cursor-not-allowed" />
-              <p className="text-xs text-slate-400 mt-1.5">L'email ne peut pas être modifié.</p>
-            </div>
-            <div className="flex justify-end pt-1">
-              <button type="submit" disabled={profileLoading}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold px-8 py-3.5 rounded-2xl text-sm transition-colors">
-                {profileLoading ? (
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                ) : 'Enregistrer'}
-              </button>
-            </div>
-          </form>
-        </div>
+      {/* ── Informations générales ── */}
+      <div className={`${panelCls} overflow-hidden`}>
+        <SectionHead title="Informations générales" sub="Nom affiché et adresse de connexion" />
+        <form onSubmit={handleProfileSave} className="space-y-5 px-7 py-6">
+          <Alert msg={profileMsg} />
+
+          <Field label="Nom complet">
+            <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
+          </Field>
+
+          <Field label="Adresse email" hint="L’email sert d’identifiant de connexion : il ne peut pas être modifié ici.">
+            <input
+              type="email" value={user?.email || ''} disabled
+              className={`${inputCls} cursor-not-allowed bg-raised text-faint`}
+            />
+          </Field>
+
+          <div className="flex justify-end border-t border-line pt-5">
+            <Button type="submit" variant="primary" loading={profileLoading}>Enregistrer</Button>
+          </div>
+        </form>
       </div>
 
-      {/* Changer mot de passe */}
-      <div className="bg-white dark:bg-[#111520] rounded-2xl border border-slate-200 dark:border-[#1e2436] shadow-sm overflow-hidden">
-        <div className="px-7 py-5 border-b border-slate-100 dark:border-[#1e2436]">
-          <h2 className="text-base font-bold text-slate-800 dark:text-white">Changer le mot de passe</h2>
-        </div>
-        <div className="px-7 py-7">
-          <form onSubmit={handlePasswordSave} className="space-y-7">
-            <Alert msg={pwMsg} />
-            <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Mot de passe actuel</label>
-              <input type="password" required value={passwords.current_password}
-                onChange={(e) => setPasswords({ ...passwords, current_password: e.target.value })}
-                placeholder="••••••••" className={inputCls} />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Nouveau mot de passe</label>
-              <input type="password" required value={passwords.password}
-                onChange={(e) => setPasswords({ ...passwords, password: e.target.value })}
-                placeholder="••••••••" className={inputCls} />
-              <PasswordStrength password={passwords.password} />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Confirmer le nouveau mot de passe</label>
-              <input type="password" required value={passwords.password_confirmation}
-                onChange={(e) => setPasswords({ ...passwords, password_confirmation: e.target.value })}
-                placeholder="••••••••" className={inputCls} />
-            </div>
-            <div className="flex justify-end pt-1">
-              <button type="submit" disabled={pwLoading}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold px-8 py-3.5 rounded-2xl text-sm transition-colors">
-                {pwLoading ? (
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                ) : 'Mettre à jour'}
-              </button>
-            </div>
-          </form>
-        </div>
+      {/* ── Sécurité ── */}
+      <div className={`${panelCls} overflow-hidden`}>
+        <SectionHead title="Sécurité" sub="Modifier votre mot de passe" />
+        <form onSubmit={handlePasswordSave} className="space-y-5 px-7 py-6">
+          <Alert msg={pwMsg} />
+
+          <Field label="Mot de passe actuel">
+            <input type="password" required value={passwords.current_password}
+              onChange={(e) => setPasswords({ ...passwords, current_password: e.target.value })}
+              placeholder="••••••••" className={inputCls} />
+          </Field>
+
+          <Field label="Nouveau mot de passe">
+            <input type="password" required value={passwords.password}
+              onChange={(e) => setPasswords({ ...passwords, password: e.target.value })}
+              placeholder="••••••••" className={inputCls} />
+            <PasswordStrength password={passwords.password} />
+          </Field>
+
+          <Field label="Confirmer le nouveau mot de passe">
+            <input type="password" required value={passwords.password_confirmation}
+              onChange={(e) => setPasswords({ ...passwords, password_confirmation: e.target.value })}
+              placeholder="••••••••" className={inputCls} />
+          </Field>
+
+          <div className="flex justify-end border-t border-line pt-5">
+            <Button type="submit" variant="primary" loading={pwLoading}>Mettre à jour</Button>
+          </div>
+        </form>
       </div>
     </div>
   )

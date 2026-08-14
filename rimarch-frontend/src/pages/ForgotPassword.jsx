@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import AuthShell from '../components/AuthShell'
 import api from '../api/axios'
 
 export default function ForgotPassword() {
@@ -24,98 +25,89 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f1117] flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-md">
-
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-10">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+    <AuthShell>
+      {sent ? (
+        <div className="rise">
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[#bcd8cb] bg-[#f0f7f3] text-[#2f7d63]">
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <span className="text-white font-bold text-xl">RIMArch</span>
-        </div>
-
-        {sent ? (
-          /* ── Email envoyé ── */
-          <div className="text-center">
-            <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-3">Email envoyé !</h2>
-            <p className="text-slate-400 text-sm leading-relaxed mb-8">
-              Un lien de réinitialisation a été envoyé à <span className="text-white font-semibold">{email}</span>.<br />
-              Vérifiez votre boîte de réception.
-            </p>
-            <Link to="/login" className="text-blue-400 text-sm font-semibold hover:text-blue-300 transition-colors">
+          <h1 className="font-display mt-5 text-[31px] leading-[1.05] text-[#14151c]">Email envoyé</h1>
+          <p className="mt-4 text-[13.5px] leading-relaxed text-[#6b6c7a]">
+            Un lien de réinitialisation vient d’être envoyé à{' '}
+            <span className="font-semibold text-[#14151c]">{email}</span>. Vérifiez votre boîte de réception,
+            le lien reste valable 60 minutes.
+          </p>
+          <div className="mt-9 border-t border-[#e4e0d7] pt-6">
+            <Link to="/login" className="text-[13px] font-semibold text-cobalt underline decoration-cobalt/30 underline-offset-4 transition hover:decoration-cobalt">
               ← Retour à la connexion
             </Link>
           </div>
-        ) : (
-          /* ── Formulaire ── */
-          <>
-            <div className="mb-10">
-              <h2 className="text-3xl font-bold text-white tracking-tight">Mot de passe oublié ?</h2>
-              <p className="text-slate-400 text-sm mt-3">
-                Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
-              </p>
+        </div>
+      ) : (
+        <>
+          <div className="rise">
+            <p className="eyebrow text-[#9c9ca8]">Récupération</p>
+            <h1 className="font-display mt-2.5 text-[31px] leading-[1.05] text-[#14151c] sm:text-[36px]">
+              Mot de passe oublié
+            </h1>
+            <p className="mt-3 text-[13.5px] leading-relaxed text-[#6b6c7a]">
+              Indiquez votre adresse email : nous vous enverrons un lien de réinitialisation.
+            </p>
+          </div>
+
+          {error && (
+            <div className="rise mt-6 flex items-start gap-3 rounded-lg border border-[#e4b4b4] bg-[#fdf3f2] px-4 py-3 text-[13px] text-[#a33a35]">
+              <svg className="mt-px h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <div className="rise delay-1">
+              <label htmlFor="email" className="eyebrow mb-2 block text-[#6b6c7a]">Adresse email</label>
+              <input
+                id="email" type="email" required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="vous@exemple.com"
+                className="field"
+              />
             </div>
 
-            {error && (
-              <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-2xl px-4 py-4 mb-8 text-sm font-medium">
-                <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div>
-                <label className="block text-base font-bold text-white mb-4">Adresse email</label>
-                <div className="flex items-center gap-4 bg-[#1a1f2e] border border-[#2a2f3e] rounded-2xl px-5 py-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
-                  <svg className="w-5 h-5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <button
+              type="submit" disabled={loading}
+              className="rise delay-2 group flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#14151c] py-[15px] text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition-all hover:bg-cobalt disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading ? (
+                <>
+                  <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                    <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z" />
                   </svg>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="vous@exemple.com"
-                    className="flex-1 bg-transparent text-lg text-white placeholder-slate-500 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold rounded-2xl py-5 text-base transition-all flex items-center justify-center gap-2"
-              >
-                {loading ? (
-                  <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  Envoi…
+                </>
+              ) : (
+                <>
+                  Envoyer le lien
+                  <svg className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12h15m0 0l-6-6m6 6l-6 6" />
                   </svg>
-                ) : 'Envoyer le lien'}
-              </button>
-            </form>
+                </>
+              )}
+            </button>
+          </form>
 
-            <p className="text-center text-sm text-slate-500 mt-10">
-              <Link to="/login" className="text-blue-400 font-semibold hover:text-blue-300 transition-colors">
-                ← Retour à la connexion
-              </Link>
-            </p>
-          </>
-        )}
-      </div>
-    </div>
+          <div className="rise delay-3 mt-9 border-t border-[#e4e0d7] pt-6">
+            <Link to="/login" className="text-[13px] font-semibold text-cobalt underline decoration-cobalt/30 underline-offset-4 transition hover:decoration-cobalt">
+              ← Retour à la connexion
+            </Link>
+          </div>
+        </>
+      )}
+    </AuthShell>
   )
 }

@@ -3,24 +3,41 @@ import { getUsers, getRoles, updateUserRole, deleteUser, createUser } from '../.
 import { useAuth } from '../../hooks/useAuth'
 import { useToast } from '../../hooks/useToast'
 import ConfirmModal from '../../components/ConfirmModal'
+import {
+  panelCls, Spinner, PageHeader, Button, IconButton, Modal, Field,
+  Notice, Tag, inputCls, formatDate,
+} from '../../components/ui'
 
-const roleColors = {
-  admin:      'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20',
-  archiviste: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
-  consultant: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20',
-  lecteur:    'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/20',
+/* Le rôle porte une couleur d'accent discrète, jamais un aplat criard. */
+const roleAccent = {
+  admin:      'border-[#c25048]/40 text-[#c25048]',
+  archiviste: 'border-cobalt/40 text-accent',
+  consultant: 'border-clay/40 text-clay',
+  lecteur:    'border-line text-muted',
 }
 
-const formatDate = (iso) =>
-  new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
+const ICON = {
+  plus:  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M12 5v14M5 12h14" />,
+  trash: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />,
+}
+
+const Icon = ({ path, className = 'h-4 w-4' }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">{path}</svg>
+)
+
+const CREATE_FIELDS = [
+  { label: 'Nom complet',   key: 'name',     type: 'text',     placeholder: 'Jean Dupont',      autoComplete: 'off' },
+  { label: 'Adresse email', key: 'email',    type: 'email',    placeholder: 'jean@rimarch.com', autoComplete: 'off' },
+  { label: 'Mot de passe',  key: 'password', type: 'password', placeholder: '••••••••',         autoComplete: 'new-password' },
+]
 
 export default function AdminUsers() {
   const { user: me } = useAuth()
   const { addToast } = useToast()
-  const [users, setUsers]           = useState([])
-  const [roles, setRoles]           = useState([])
-  const [loading, setLoading]       = useState(true)
-  const [showCreate, setShowCreate] = useState(false)
+  const [users, setUsers]               = useState([])
+  const [roles, setRoles]               = useState([])
+  const [loading, setLoading]           = useState(true)
+  const [showCreate, setShowCreate]     = useState(false)
   const [confirmUser, setConfirmUser]   = useState(null)
   const [deleting, setDeleting]         = useState(null)
   const [updatingRole, setUpdatingRole] = useState(null)
@@ -33,8 +50,7 @@ export default function AdminUsers() {
     setLoading(true)
     try {
       const [u, r] = await Promise.all([getUsers(), getRoles()])
-      setUsers(u.data)
-      setRoles(r.data)
+      setUsers(u.data); setRoles(r.data)
     } finally { setLoading(false) }
   }
 
@@ -46,9 +62,8 @@ export default function AdminUsers() {
       const { data } = await updateUserRole(userId, role)
       setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, roles: data.roles } : u))
       addToast('Rôle mis à jour.')
-    } catch {
-      addToast('Erreur lors de la mise à jour du rôle.', 'error')
-    } finally { setUpdatingRole(null) }
+    } catch { addToast('Erreur lors de la mise à jour du rôle.', 'error') }
+    finally { setUpdatingRole(null) }
   }
 
   const handleDelete = async () => {
@@ -58,9 +73,8 @@ export default function AdminUsers() {
       setUsers((prev) => prev.filter((u) => u.id !== confirmUser.id))
       setConfirmUser(null)
       addToast('Utilisateur supprimé.')
-    } catch {
-      addToast('Erreur lors de la suppression.', 'error')
-    } finally { setDeleting(null) }
+    } catch { addToast('Erreur lors de la suppression.', 'error') }
+    finally { setDeleting(null) }
   }
 
   const handleCreate = async (e) => {
@@ -79,104 +93,115 @@ export default function AdminUsers() {
     } finally { setFormLoading(false) }
   }
 
-  const inputCls = "w-full bg-slate-50 dark:bg-[#0d1018] border-2 border-slate-200 dark:border-[#1e2436] rounded-2xl px-5 py-[14px] text-base text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#111520] focus:border-blue-400 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-500/10 transition-all"
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
 
-      {/* En-tête */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">Utilisateurs</h1>
-          <p className="text-slate-400 text-sm mt-2">{users.length} compte{users.length !== 1 ? 's' : ''} enregistré{users.length !== 1 ? 's' : ''}</p>
-        </div>
-        <button onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold px-5 py-3 rounded-xl transition-colors shadow-md shadow-blue-600/20">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+      <PageHeader
+        eyebrow="Administration"
+        title="Utilisateurs"
+        sub={`${users.length} compte${users.length !== 1 ? 's' : ''} enregistré${users.length !== 1 ? 's' : ''}`}
+      >
+        <Button variant="primary" onClick={() => setShowCreate(true)} icon={<Icon path={ICON.plus} />}>
           Nouvel utilisateur
-        </button>
-      </div>
+        </Button>
+      </PageHeader>
 
-      {/* Tableau */}
-      <div className="bg-white dark:bg-[#111520] rounded-2xl border border-slate-200 dark:border-[#1e2436] overflow-hidden shadow-sm">
+      <div className={`${panelCls} overflow-hidden`}>
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <svg className="animate-spin w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-            </svg>
+          <div className="flex items-center justify-center py-24 text-faint">
+            <Spinner className="h-7 w-7" />
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-12 gap-4 px-8 py-4 bg-slate-50 dark:bg-[#0d1018] border-b border-slate-100 dark:border-[#1e2436] text-xs font-bold text-slate-400 uppercase tracking-widest">
-              <div className="col-span-4">Utilisateur</div>
-              <div className="col-span-3">Rôle</div>
-              <div className="col-span-2">Documents</div>
-              <div className="col-span-2">Inscrit le</div>
-              <div className="col-span-1 text-right">Actions</div>
+            <div className="hidden grid-cols-12 gap-4 border-b border-line bg-raised px-6 py-3 lg:grid">
+              <div className="eyebrow col-span-4 text-faint">Utilisateur</div>
+              <div className="eyebrow col-span-3 text-faint">Rôle</div>
+              <div className="eyebrow col-span-2 text-faint">Documents</div>
+              <div className="eyebrow col-span-2 text-faint">Inscrit le</div>
+              <div className="eyebrow col-span-1 text-right text-faint">Actions</div>
             </div>
-            <div className="divide-y divide-slate-50 dark:divide-[#1e2436]">
+
+            <div className="divide-y divide-line">
               {users.map((user) => {
                 const role = user.roles?.[0]
+                const isMe = user.id === me?.id
                 return (
-                  <div key={user.id} className="grid grid-cols-12 gap-4 px-8 py-5 items-center hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
-                    <div className="col-span-4 flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
-                        {user.name?.charAt(0).toUpperCase()}
-                      </div>
-                      <div className="min-w-0">
+                  <div key={user.id} className="transition-colors hover:bg-raised">
+
+                    {/* Mobile */}
+                    <div className="flex items-center gap-3 px-4 py-4 lg:hidden">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ink">
+                        <span className="text-[15px] font-semibold leading-none text-canvas">
+                          {user.name?.charAt(0).toUpperCase()}
+                        </span>
+                      </span>
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{user.name}</p>
-                          {user.id === me?.id && (
-                            <span className="text-xs bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded-full font-medium">Vous</span>
-                          )}
+                          <p className="truncate text-[13.5px] font-semibold text-ink">{user.name}</p>
+                          {isMe && <Tag className="border-cobalt/40 text-accent">Vous</Tag>}
                         </div>
-                        <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                        <p className="truncate text-[11.5px] text-faint">{user.email}</p>
+                        <div className="mt-2 flex items-center gap-2">
+                          {role && <Tag className={roleAccent[role.name] || ''}>{role.label || role.name}</Tag>}
+                          <span className="text-[11.5px] text-faint">
+                            {user.documents_count ?? 0} doc{user.documents_count !== 1 ? 's' : ''}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-span-3">
-                      {updatingRole === user.id ? (
-                        <svg className="animate-spin w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                        </svg>
-                      ) : (
-                        <select
-                          value={role?.name || ''}
-                          onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                          disabled={user.id === me?.id}
-                          className={`text-xs font-medium px-2.5 py-1.5 rounded-lg border cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:cursor-not-allowed disabled:opacity-60 ${roleColors[role?.name] || 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/20'}`}
-                        >
-                          {roles.map((r) => (
-                            <option key={r.name} value={r.name}>{r.label}</option>
-                          ))}
-                        </select>
+                      {!isMe && (
+                        <IconButton label="Supprimer" danger onClick={() => setConfirmUser(user)} loading={deleting === user.id}>
+                          <Icon path={ICON.trash} />
+                        </IconButton>
                       )}
                     </div>
-                    <div className="col-span-2">
-                      <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">{user.documents_count ?? 0}</span>
-                      <span className="text-xs text-slate-400 ml-1">doc{user.documents_count !== 1 ? 's' : ''}</span>
-                    </div>
-                    <div className="col-span-2 text-sm text-slate-500">{formatDate(user.created_at)}</div>
-                    <div className="col-span-1 flex justify-end">
-                      {user.id !== me?.id && (
-                        <button onClick={() => setConfirmUser(user)} disabled={deleting === user.id}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all disabled:opacity-40">
-                          {deleting === user.id ? (
-                            <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                            </svg>
-                          ) : (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          )}
-                        </button>
-                      )}
+
+                    {/* Desktop */}
+                    <div className="hidden grid-cols-12 items-center gap-4 px-6 py-3.5 lg:grid">
+                      <div className="col-span-4 flex min-w-0 items-center gap-3">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-ink">
+                          <span className="text-[14px] font-semibold leading-none text-canvas">
+                            {user.name?.charAt(0).toUpperCase()}
+                          </span>
+                        </span>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="truncate text-[13.5px] font-medium text-ink">{user.name}</p>
+                            {isMe && <Tag className="border-cobalt/40 text-accent">Vous</Tag>}
+                          </div>
+                          <p className="truncate text-[11.5px] text-faint">{user.email}</p>
+                        </div>
+                      </div>
+
+                      <div className="col-span-3">
+                        {updatingRole === user.id ? (
+                          <Spinner className="h-4 w-4 text-accent" />
+                        ) : (
+                          <select
+                            value={role?.name || ''}
+                            onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                            disabled={isMe}
+                            aria-label={`Rôle de ${user.name}`}
+                            className={`cursor-pointer rounded-full border bg-transparent py-1.5 pl-3.5 pr-2 text-[11.5px] font-medium transition-all focus:outline-none focus:shadow-[0_0_0_3px_var(--rim-accent-soft)] disabled:cursor-not-allowed disabled:opacity-60 ${roleAccent[role?.name] || 'border-line text-muted'}`}
+                          >
+                            {roles.map((r) => <option key={r.name} value={r.name} className="bg-surface text-ink">{r.label}</option>)}
+                          </select>
+                        )}
+                      </div>
+
+                      <div className="col-span-2">
+                        <span className="font-display text-[16px] text-ink tabular-nums">{user.documents_count ?? 0}</span>
+                        <span className="ml-1.5 text-[11.5px] text-faint">doc{user.documents_count !== 1 ? 's' : ''}</span>
+                      </div>
+
+                      <div className="col-span-2 text-[12.5px] text-muted">{formatDate(user.created_at)}</div>
+
+                      <div className="col-span-1 flex justify-end">
+                        {!isMe && (
+                          <IconButton label="Supprimer" danger onClick={() => setConfirmUser(user)} loading={deleting === user.id}>
+                            <Icon path={ICON.trash} />
+                          </IconButton>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )
@@ -187,76 +212,45 @@ export default function AdminUsers() {
       </div>
 
       {confirmUser && (
-        <ConfirmModal
-          title="Supprimer l'utilisateur"
-          message={`Êtes-vous sûr de vouloir supprimer le compte de "${confirmUser.name}" ? Tous ses tokens seront révoqués.`}
-          confirmLabel="Supprimer"
-          loading={!!deleting}
-          onConfirm={handleDelete}
-          onCancel={() => setConfirmUser(null)}
-        />
+        <ConfirmModal title="Supprimer l'utilisateur"
+          message={`Supprimer le compte de « ${confirmUser.name} » ? Toutes ses sessions seront révoquées.`}
+          confirmLabel="Supprimer" loading={!!deleting}
+          onConfirm={handleDelete} onCancel={() => setConfirmUser(null)} />
       )}
 
-      {/* Modal création */}
       {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowCreate(false)} />
-          <div className="relative bg-white dark:bg-[#111520] rounded-3xl shadow-2xl w-full max-w-xl border border-slate-200 dark:border-[#1e2436] flex flex-col max-h-[90vh]">
-            {/* Header */}
-            <div className="flex items-center justify-between px-10 py-7 border-b border-slate-100 dark:border-[#1e2436] shrink-0">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Nouvel utilisateur</h2>
-                <p className="text-slate-400 text-sm mt-1.5">Créez un compte et assignez un rôle</p>
-              </div>
-              <button onClick={() => setShowCreate(false)}
-                className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            {/* Scrollable fields */}
-            <form id="create-user-form" onSubmit={handleCreate} autoComplete="off" className="px-10 py-9 space-y-7 overflow-y-auto flex-1">
-              {formError && (
-                <div className="bg-red-50 dark:bg-red-500/10 border-2 border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400 rounded-2xl px-5 py-4 text-sm font-medium">{formError}</div>
-              )}
-              {[
-                { label: 'Nom complet',   key: 'name',     type: 'text',     placeholder: 'Jean Dupont',       autoComplete: 'off' },
-                { label: 'Adresse email', key: 'email',    type: 'email',    placeholder: 'jean@rimarch.com',  autoComplete: 'off' },
-                { label: 'Mot de passe',  key: 'password', type: 'password', placeholder: '••••••••',          autoComplete: 'new-password' },
-              ].map(({ label, key, type, placeholder, autoComplete }) => (
-                <div key={key}>
-                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">{label}</label>
-                  <input type={type} required autoComplete={autoComplete} value={form[key]}
-                    onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                    placeholder={placeholder} className={inputCls} />
-                </div>
-              ))}
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Rôle</label>
-                <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className={inputCls}>
-                  {roles.map((r) => <option key={r.name} value={r.name}>{r.label}</option>)}
-                </select>
-              </div>
-            </form>
-            {/* Sticky footer buttons */}
-            <div className="flex justify-end gap-3 px-10 py-6 border-t border-slate-100 dark:border-[#1e2436] shrink-0 bg-white dark:bg-[#111520] rounded-b-3xl">
-              <button type="button" onClick={() => setShowCreate(false)}
-                className="px-7 py-3.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-semibold rounded-2xl text-sm transition-colors">
-                Annuler
-              </button>
-              <button type="submit" form="create-user-form" disabled={formLoading}
-                className="px-7 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold rounded-2xl text-sm transition-colors flex items-center gap-2">
-                {formLoading ? (
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                ) : 'Créer'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <Modal
+          eyebrow="Administration"
+          title="Nouvel utilisateur"
+          sub="Créez un compte et attribuez-lui un rôle."
+          onClose={() => setShowCreate(false)}
+          footer={
+            <>
+              <Button onClick={() => setShowCreate(false)} disabled={formLoading}>Annuler</Button>
+              <Button type="submit" form="create-user-form" variant="primary" loading={formLoading}>Créer le compte</Button>
+            </>
+          }
+        >
+          <form id="create-user-form" onSubmit={handleCreate} autoComplete="off" className="space-y-5">
+            {formError && <Notice>{formError}</Notice>}
+
+            {CREATE_FIELDS.map(({ label, key, type, placeholder, autoComplete }) => (
+              <Field key={key} label={label}>
+                <input
+                  type={type} required autoComplete={autoComplete} value={form[key]}
+                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                  placeholder={placeholder} className={inputCls}
+                />
+              </Field>
+            ))}
+
+            <Field label="Rôle" hint="Le rôle détermine les droits de lecture, dépôt et administration.">
+              <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className={inputCls}>
+                {roles.map((r) => <option key={r.name} value={r.name}>{r.label}</option>)}
+              </select>
+            </Field>
+          </form>
+        </Modal>
       )}
     </div>
   )

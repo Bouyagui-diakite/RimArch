@@ -1,64 +1,43 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import AuthLeftPanel from '../components/AuthLeftPanel'
 import PasswordStrength from '../components/PasswordStrength'
+import AuthLeftPanel from '../components/AuthLeftPanel'
+import AuthShell from '../components/AuthShell'
 import api from '../api/axios'
-
-function InputWrapper({ children }) {
-  return (
-    <div className="flex items-stretch bg-[#0d1018] border border-[#1e2436] rounded-xl overflow-hidden focus-within:border-blue-500/60 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
-      {children}
-    </div>
-  )
-}
-
-function IconSlot({ children }) {
-  return (
-    <div className="px-4 flex items-center shrink-0 border-r border-[#1e2436] text-slate-500">
-      {children}
-    </div>
-  )
-}
-
-const inputCls = "flex-1 min-w-0 bg-transparent py-5 px-4 text-base text-white placeholder-slate-600 focus:outline-none"
 
 function EyeIcon({ open }) {
   return open
-    ? <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-    : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+    ? <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M3 3l18 18" /></svg>
+    : <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
 }
 
 function ConfirmPasswordInput({ value, password, showPassword, onChange }) {
   const isEmpty = !value
   const matches = value === password
 
-  const borderCls = isEmpty
-    ? 'border-[#1e2436] focus-within:border-blue-500/60 focus-within:ring-blue-500/10'
+  const stateCls = isEmpty
+    ? ''
     : matches
-      ? 'border-emerald-500/40 focus-within:border-emerald-500/60 focus-within:ring-emerald-500/10'
-      : 'border-red-500/40 focus-within:border-red-500/60 focus-within:ring-red-500/10'
-
-  const icon = isEmpty
-    ? <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-    : matches
-      ? <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-      : <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+      ? 'border-[#3f8f74] focus:border-[#3f8f74] focus:shadow-[0_0_0_3px_rgba(63,143,116,0.14)]'
+      : 'border-[#cf6a63] focus:border-[#cf6a63] focus:shadow-[0_0_0_3px_rgba(207,106,99,0.14)]'
 
   return (
-    <div className={`flex items-stretch bg-[#0d1018] border rounded-xl overflow-hidden focus-within:ring-2 transition-all ${borderCls}`}>
-      <div className="px-4 flex items-center shrink-0 border-r border-[#1e2436]">
-        {icon}
-      </div>
+    <div className="relative">
       <input
-        type={showPassword ? 'text' : 'password'}
-        required
-        value={value}
-        onChange={onChange}
-        autoComplete="new-password"
+        type={showPassword ? 'text' : 'password'} required
+        value={value} onChange={onChange} autoComplete="new-password"
         placeholder="••••••••"
-        className={inputCls}
+        className={`field pr-11 ${stateCls}`}
       />
+      {!isEmpty && (
+        <span className="absolute right-4 top-1/2 -translate-y-1/2">
+          {matches
+            ? <svg className="h-4 w-4 text-[#2f7d63]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M5 13l4 4L19 7" /></svg>
+            : <svg className="h-4 w-4 text-[#c25048]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M6 18L18 6M6 6l12 12" /></svg>
+          }
+        </span>
+      )}
     </div>
   )
 }
@@ -87,14 +66,8 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!isStrongPassword(form.password)) {
-      setError(PASSWORD_REQUIREMENTS)
-      return
-    }
-    if (form.password !== form.password_confirmation) {
-      setError('Les mots de passe ne correspondent pas.')
-      return
-    }
+    if (!isStrongPassword(form.password)) { setError(PASSWORD_REQUIREMENTS); return }
+    if (form.password !== form.password_confirmation) { setError('Les mots de passe ne correspondent pas.'); return }
     setError('')
     setLoading(true)
     try {
@@ -103,137 +76,105 @@ export default function Register() {
       navigate('/verify-email')
     } catch (err) {
       setError(extractApiError(err))
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
 
   return (
-    <div className="min-h-screen flex">
-      <AuthLeftPanel mode="register" />
+    <AuthShell panel={<AuthLeftPanel mode="register" />}>
 
-      <div className="flex-1 flex items-center justify-center bg-[#0a0d14] px-8 py-12">
-        <div className="w-full max-w-md">
-
-          <div className="bg-[#111520] border border-[#1e2436] rounded-2xl px-8 py-14 shadow-2xl shadow-black/50">
-
-            <div className="mb-10">
-              <h2 className="text-3xl font-bold text-white tracking-tight">Créer un compte</h2>
-              <p className="text-slate-500 text-sm mt-2">Rejoignez la plateforme RIMArch</p>
-            </div>
-
-            {error && (
-              <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3.5 mb-6 text-sm">
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5">
-
-              {/* Full name */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Nom complet</label>
-                <InputWrapper>
-                  <IconSlot>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </IconSlot>
-                  <input type="text" required autoComplete="off" value={form.name} onChange={set('name')}
-                    placeholder="Jean Dupont" className={inputCls} />
-                </InputWrapper>
-              </div>
-
-              {/* Email */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Adresse email</label>
-                <InputWrapper>
-                  <IconSlot>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </IconSlot>
-                  <input type="email" required autoComplete="off" value={form.email} onChange={set('email')}
-                    placeholder="votre@email.com" className={inputCls} />
-                </InputWrapper>
-              </div>
-
-              {/* Password */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Mot de passe</label>
-                <InputWrapper>
-                  <IconSlot>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  </IconSlot>
-                  <input type={showPassword ? 'text' : 'password'} required autoComplete="new-password" value={form.password} onChange={set('password')}
-                    placeholder="••••••••" className={inputCls} />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)}
-                    className="px-4 flex items-center text-slate-600 hover:text-slate-400 transition-colors shrink-0">
-                    <EyeIcon open={showPassword} />
-                  </button>
-                </InputWrapper>
-              </div>
-
-              <PasswordStrength password={form.password} />
-
-              {/* Confirm password */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Confirmer le mot de passe</label>
-                <ConfirmPasswordInput
-                  value={form.password_confirmation}
-                  password={form.password}
-                  showPassword={showPassword}
-                  onChange={set('password_confirmation')}
-                />
-              </div>
-
-              {/* Submit */}
-              <button type="submit" disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:from-blue-700 active:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl py-4 text-base transition-all flex items-center justify-center gap-2 !mt-8 shadow-lg shadow-blue-600/25"
-              >
-                {loading ? (
-                  <svg className="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                ) : (
-                  <>
-                    Créer mon compte
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#1e2436]" />
-              </div>
-              <div className="relative flex justify-center">
-                <span className="px-3 text-xs text-slate-600 bg-[#111520]">Déjà un compte ?</span>
-              </div>
-            </div>
-
-            <Link
-              to="/login"
-              className="flex items-center justify-center gap-2 w-full py-4 rounded-xl border border-[#1e2436] text-sm font-semibold text-slate-400 hover:text-white hover:border-slate-600 transition-all"
-            >
-              Se connecter
-            </Link>
-          </div>
-
-          <p className="text-center text-xs text-slate-700 mt-8">
-            RIMArch © {new Date().getFullYear()}
-          </p>
-        </div>
+      <div className="rise">
+        <p className="eyebrow text-[#9c9ca8]">Nouveau compte</p>
+        <h1 className="font-display mt-2.5 text-[32px] leading-[1.05] text-[#14151c] sm:text-[37px]">
+          Créer un compte
+        </h1>
+        <p className="mt-3 text-[13.5px] text-[#6b6c7a]">
+          Quelques informations et votre espace est prêt.
+        </p>
       </div>
-    </div>
+
+      {error && (
+        <div className="rise mt-6 flex items-start gap-3 rounded-lg border border-[#e4b4b4] bg-[#fdf3f2] px-4 py-3 text-[13px] leading-snug text-[#a33a35]">
+          <svg className="mt-px h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} autoComplete="off" className="mt-7 space-y-5">
+
+        <div className="rise delay-1">
+          <label htmlFor="name" className="eyebrow mb-2 block text-[#6b6c7a]">Nom complet</label>
+          <input id="name" type="text" required autoComplete="off" value={form.name} onChange={set('name')}
+            placeholder="Jean Dupont" className="field" />
+        </div>
+
+        <div className="rise delay-2">
+          <label htmlFor="email" className="eyebrow mb-2 block text-[#6b6c7a]">Adresse email</label>
+          <input id="email" type="email" required autoComplete="off" value={form.email} onChange={set('email')}
+            placeholder="vous@exemple.com" className="field" />
+        </div>
+
+        <div className="rise delay-3">
+          <label htmlFor="password" className="eyebrow mb-2 block text-[#6b6c7a]">Mot de passe</label>
+          <div className="relative">
+            <input id="password" type={showPassword ? 'text' : 'password'} required autoComplete="new-password"
+              value={form.password} onChange={set('password')}
+              placeholder="••••••••" className="field pr-12" />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2 text-[#a2a1a9] transition hover:bg-[#f2f0ea] hover:text-[#14151c]"
+            >
+              <EyeIcon open={showPassword} />
+            </button>
+          </div>
+          <PasswordStrength password={form.password} />
+        </div>
+
+        <div className="rise delay-4">
+          <label className="eyebrow mb-2 block text-[#6b6c7a]">Confirmation</label>
+          <ConfirmPasswordInput
+            value={form.password_confirmation} password={form.password}
+            showPassword={showPassword} onChange={set('password_confirmation')}
+          />
+        </div>
+
+        <button
+          type="submit" disabled={loading}
+          className="rise delay-5 group flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#14151c] py-[15px] text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition-all hover:bg-cobalt disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loading ? (
+            <>
+              <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z" />
+              </svg>
+              Création…
+            </>
+          ) : (
+            <>
+              Créer mon compte
+              <svg className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12h15m0 0l-6-6m6 6l-6 6" />
+              </svg>
+            </>
+          )}
+        </button>
+      </form>
+
+      <div className="rise delay-6 mt-8 border-t border-[#e4e0d7] pt-6">
+        <p className="text-[13px] text-[#6b6c7a]">
+          Vous avez déjà un compte ?{' '}
+          <Link
+            to="/login"
+            className="font-semibold text-cobalt underline decoration-cobalt/30 underline-offset-4 transition hover:decoration-cobalt"
+          >
+            Se connecter
+          </Link>
+        </p>
+      </div>
+    </AuthShell>
   )
 }
