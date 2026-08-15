@@ -103,7 +103,7 @@ export default function Login() {
 
         <button
           type="submit" disabled={loading}
-          className="rise delay-3 group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-lg bg-[#14151c] py-[15px] text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition-all hover:bg-cobalt disabled:cursor-not-allowed disabled:opacity-60"
+          className="rise delay-3 group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-lg bg-[#14151c] py-3.75 text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition-all hover:bg-cobalt disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? (
             <>
